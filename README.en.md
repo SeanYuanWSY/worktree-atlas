@@ -2,7 +2,7 @@
 
 **Your worktrees, back on the graph.** A focused native macOS workspace that displays multiple repositories and attaches each worktree to its real Git HEAD.
 
-This **0.1.0-dev source release** has been built, ad-hoc signed, and opened as a native app on an Apple Silicon Mac. Disposable repositories verified two graph cards and the native create, lock, unlock, remove, and prune flows. `./script/check.sh` ran all 48 Swift Testing tests successfully with Command Line Tools. The owner confirmed that no GitHub repository existed; the public publication target is `SeanYuanWSY/worktree-atlas`. See [validation](docs/VALIDATION.md).
+This **0.1.0-dev source release** has been built, ad-hoc signed, and opened as a native app on an Apple Silicon Mac. Disposable repositories verified two graph cards and the native create, lock, unlock, remove, and prune flows. All 48 Swift Testing tests passed both locally and in the [GitHub macOS build](https://github.com/SeanYuanWSY/worktree-atlas/actions/runs/35975786842). The source is in the [public GitHub repository](https://github.com/SeanYuanWSY/worktree-atlas). See [validation](docs/VALIDATION.md).
 
 ## Scope
 
@@ -20,7 +20,7 @@ Requires macOS 14+, Swift 6 and Git supporting NUL-delimited worktree porcelain 
 ./script/build_and_run.sh
 ```
 
-The script builds a project-local app bundle and signs it ad hoc. It does not install to `/Applications` or disable Gatekeeper. The check script requires at least 48 executed tests, avoiding a false pass from zero tests on Command Line Tools. `script/package_release.sh` creates a development DMG on macOS. CI is defined but has not yet been verified on GitHub.
+The script builds a project-local app bundle and signs it ad hoc. It does not install to `/Applications` or disable Gatekeeper. The check script requires at least 48 executed tests, avoiding a false pass from zero tests on Command Line Tools. `script/package_release.sh` creates a development DMG on macOS. The initial source commit passed GitHub's Xcode 16.4 macOS build and test workflow; the uploaded ZIP is a development artifact, not a notarized release.
 
 ## Safety
 
@@ -32,7 +32,7 @@ Registered repository and worktree paths retain their directory identities acros
 
 ## Publish
 
-The owner confirmed a new **public** `SeanYuanWSY/worktree-atlas` repository as the target. `script/publish_github.sh` creates its initial commit from a fixed 54-file manifest and pushes only `main`. It refuses an existing repository or remote; later updates use normal Git commits.
+The [**public** repository](https://github.com/SeanYuanWSY/worktree-atlas) has been created. `script/publish_github.sh` was used for the initial commit from a fixed 54-file manifest and pushed only `main`. It refuses an existing repository or remote; later updates use normal Git commits.
 
 ## Attribution
 

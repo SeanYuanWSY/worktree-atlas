@@ -20,6 +20,12 @@
 
 本次修改还补上了 Swift 6.3 下 Git 解析器的编译问题、图节点的 HEAD/状态标记、窗口宽度变化时的图适配、演示数据短 HEAD，以及仓库身份和脚本防护。最终原生应用已在这些改动后重新构建与打开；Swift 与 Shell 语法检查、签名及 plist 检查通过。公开发布前复核已恢复上游版权原行、移除文档中的个人绝对路径、将新仓库发布脚本限定为固定 54 个文件与单分支推送；GitHub 创建和推送以执行后的远端记录为准。
 
+## GitHub 发布核验
+
+- 已创建并推送公开仓库：`https://github.com/SeanYuanWSY/worktree-atlas`。GitHub 返回可见性 `PUBLIC`、默认分支 `main`。
+- 首个提交为 `0b2296c4eba54274f982c8a19b5c8091d8bde855`；`git ls-remote origin refs/heads/main` 与本地 HEAD 一致。GitHub 树接口与本地提交树均为 54 个文件。提交的作者和提交者均为该 GitHub 账号的 noreply 身份。
+- 初次推送触发的 [macOS Actions 运行 35975786842](https://github.com/SeanYuanWSY/worktree-atlas/actions/runs/35975786842) 已实际结束，结论 `success`。运行器为 Xcode 16.4 / Swift 6.1.2，日志显示 **48 项测试通过**、原生应用构建成功、开发版 ZIP 打包与上传成功。产物 `WorktreeAtlas-macOS-ARM64-development` 是 CI 开发包，并非 Developer ID 签名或公证的正式发行版。
+
 ## 前期 Linux 交付环境与记录
 
 - Linux x86_64；Swift 6.2.1，目标 `x86_64-unknown-linux-gnu`；Git 2.47.3。
@@ -70,9 +76,9 @@ python script/check_preview.py
 - UI 新建工作树的“已有分支”和“游离 HEAD”模式，以及极长分支名、准确像素窗口尺寸、外部程序打开路径等仍待逐项验收。
 - Intel 运行、VoiceOver、多窗口行为、指定最小窗口尺寸及压力测试。
 - DMG、Developer ID 签名和 Apple notarization。当前 `.app` 仅为本机 ad-hoc 签名的开发包。
-- GitHub 新仓库的实际推送与 Actions 结果需以远端执行结果为准；源码 ZIP 本身不含 Git 元数据。
+- 首个 GitHub Actions 运行已通过；后续提交仍须以各自远端运行的实际结论为准。原始源码 ZIP 本身不含 Git 元数据。
 - 大型真实仓库、极多工作树、真实离线外接盘与持续并发变更的压力测试。
 
 ## 后续入口
 
-项目代码位于本文件的上一级工程目录。继续用 `./script/check.sh` 验证，未勾选的原生验收见 [LOCAL_TEST.md](LOCAL_TEST.md)。首次公开发布使用固定文件清单的 `./script/publish_github.sh`；执行后再记录远端 URL、提交与 Actions 结果。
+项目代码位于本文件的上一级工程目录。继续用 `./script/check.sh` 验证，未勾选的原生验收见 [LOCAL_TEST.md](LOCAL_TEST.md)。公开仓库已创建；后续改动通过普通 Git 提交同步，不重复执行首次发布脚本。

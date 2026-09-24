@@ -2,9 +2,9 @@
 
 **把工作树放回图里。** 一个以工作树为中心的原生 macOS 应用：多个仓库同屏，工作树直接标在真实 Git 提交图上。
 
-[English](README.en.md) · [架构](docs/ARCHITECTURE.md) · [本机验收](docs/LOCAL_TEST.md) · [验证记录](docs/VALIDATION.md) · [开发交接](AGENTS.md)
+[公开仓库](https://github.com/SeanYuanWSY/worktree-atlas) · [English](README.en.md) · [架构](docs/ARCHITECTURE.md) · [本机验收](docs/LOCAL_TEST.md) · [验证记录](docs/VALIDATION.md) · [开发交接](AGENTS.md)
 
-> **状态：0.1.0-dev，本机验证通过。** 已在 Apple Silicon Mac 上编译、签名并打开原生应用，用临时 Git 仓库验证双仓库图谱、新建、锁定、解锁、移除和失效记录清理。`./script/check.sh` 在本机实际运行 48 项测试并全部通过；详细范围见[验证记录](docs/VALIDATION.md)。用户已确认此前没有 GitHub 仓库，本项目的公开发布目标为 `SeanYuanWSY/worktree-atlas`。
+> **状态：0.1.0-dev，本机与 GitHub 构建验证通过，源码已公开。** 已在 Apple Silicon Mac 上编译、签名并打开原生应用，用临时 Git 仓库验证双仓库图谱、新建、锁定、解锁、移除和失效记录清理。本机及[GitHub Mac 构建](https://github.com/SeanYuanWSY/worktree-atlas/actions/runs/35975786842)均实际运行 48 项测试并全部通过；详细范围见[验证记录](docs/VALIDATION.md)。GitHub 仓库 `SeanYuanWSY/worktree-atlas` 已创建为公开仓库。
 
 ## 界面方向
 
@@ -78,13 +78,13 @@ swift run atlas-inspect --demo
 
 ## 发布到 GitHub
 
-用户已确认没有现有 GitHub 仓库，并授权创建公开的 `SeanYuanWSY/worktree-atlas`。首次发布使用：
+公开仓库：[SeanYuanWSY/worktree-atlas](https://github.com/SeanYuanWSY/worktree-atlas)。首次发布使用了：
 
 ```bash
 ./script/publish_github.sh
 ```
 
-脚本只接受已登录的 `SeanYuanWSY` 账号，固定提交项目的 54 个源文件，创建公开仓库并仅推送 `main`；拒绝覆盖已有仓库、更换已有 origin 或向父级仓库写入，不使用 force push。若创建成功但首次推送中断，检查 origin 后可使用 `--resume`。后续开发按普通 Git 提交流程进行。
+脚本只接受已登录的 `SeanYuanWSY` 账号，固定提交项目的 54 个源文件，创建公开仓库并仅推送 `main`；拒绝覆盖已有仓库、更换已有 origin 或向父级仓库写入，不使用 force push。该脚本只用于首次发布，不要在已创建的仓库重复运行；后续开发按普通 Git 提交流程进行。
 
 ## 打包
 

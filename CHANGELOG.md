@@ -11,4 +11,4 @@ Initial repository-ready implementation, based on selected GitScope MIT componen
 - Foreground refresh, external app handoff, local registry and mutation-disabled demo mode.
 - Foundation core tests, live local-Git fixtures, package/build/publish scripts and macOS CI definitions.
 
-Verified on Apple Silicon macOS: native build and UI, disposable Git worktree operations, and 48 Swift Testing tests. GitHub publication and Actions, Intel execution, DMG generation and Apple notarization require separate observed results. See docs/VALIDATION.md for the exact scope.
+Verified on Apple Silicon macOS: native build and UI, disposable Git worktree operations, and 48 Swift Testing tests. The source was published in a public GitHub repository; its initial Xcode 16.4 Actions run also passed 48 tests and built the app. Intel execution, DMG generation and Apple notarization require separate observed results. See docs/VALIDATION.md for the exact scope.

@@ -17,7 +17,7 @@ A beautiful **native macOS, worktree-only, multi-repository graph dashboard**. D
 
 ## Current Mac handoff
 
-The ZIP was extracted into this project directory. The 2026-09-24 Apple Silicon build, 48 passing Swift Testing tests, and native UI checks are recorded in `docs/VALIDATION.md`; continue from its unchecked items rather than repeating the Linux-only handoff. This Mac has Swift 6.3.1 Command Line Tools but no full Xcode. The source ZIP had no `.git`; the owner confirmed that no GitHub repository existed and authorized creating the public `SeanYuanWSY/worktree-atlas` repository. The initial publish script is for that new target only. Use disposable fixture repos for write-operation testing.
+The ZIP was extracted into this project directory. The 2026-09-24 Apple Silicon build, 48 passing Swift Testing tests, and native UI checks are recorded in `docs/VALIDATION.md`; continue from its unchecked items rather than repeating the Linux-only handoff. This Mac has Swift 6.3.1 Command Line Tools but no full Xcode. The source ZIP had no `.git`; the public repository is now `https://github.com/SeanYuanWSY/worktree-atlas` on `main`. The initial publish script has already been used; subsequent changes use ordinary commits. Use disposable fixture repos for write-operation testing.
 
 ## Engineering boundaries
 
