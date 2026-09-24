@@ -1,0 +1,112 @@
+[0/1] Planning build
+Building for debugging...
+[0/3] Write swift-version--1BA0962812E73E12.txt
+Build complete! (0.12s)
+[0/1] Planning build
+Building for debugging...
+[0/5] Write swift-version--1BA0962812E73E12.txt
+Build complete! (0.13s)
+Test Suite 'All tests' started at 2026-09-24 03:13:40.068
+Test Suite 'debug.xctest' started at 2026-09-24 03:13:40.070
+Test Suite 'GraphTests' started at 2026-09-24 03:13:40.070
+Test Case 'GraphTests.testDefaultBranchIsAnchorWithoutWorktree' started at 2026-09-24 03:13:40.070
+Test Case 'GraphTests.testDefaultBranchIsAnchorWithoutWorktree' passed (0.002 seconds)
+Test Case 'GraphTests.testDetachedUnknownHeadRemainsVisible' started at 2026-09-24 03:13:40.071
+Test Case 'GraphTests.testDetachedUnknownHeadRemainsVisible' passed (0.101 seconds)
+Test Case 'GraphTests.testDuplicateCommitInputDeduplicated' started at 2026-09-24 03:13:40.172
+Test Case 'GraphTests.testDuplicateCommitInputDeduplicated' passed (0.0 seconds)
+Test Case 'GraphTests.testFullModeRetainsAllNodes' started at 2026-09-24 03:13:40.172
+Test Case 'GraphTests.testFullModeRetainsAllNodes' passed (0.0 seconds)
+Test Case 'GraphTests.testGeneratedDAGsPreserveReachabilityAndDeterminism' started at 2026-09-24 03:13:40.172
+Test Case 'GraphTests.testGeneratedDAGsPreserveReachabilityAndDeterminism' passed (0.485 seconds)
+Test Case 'GraphTests.testHistoryBoundaryIsNotInventedRoot' started at 2026-09-24 03:13:40.657
+Test Case 'GraphTests.testHistoryBoundaryIsNotInventedRoot' passed (0.0 seconds)
+Test Case 'GraphTests.testLinearCommitsCompressWithExactCount' started at 2026-09-24 03:13:40.658
+Test Case 'GraphTests.testLinearCommitsCompressWithExactCount' passed (0.0 seconds)
+Test Case 'GraphTests.testMergeAndForkSurvive' started at 2026-09-24 03:13:40.658
+Test Case 'GraphTests.testMergeAndForkSurvive' passed (0.0 seconds)
+Test Case 'GraphTests.testMergePathsRemainDistinctWithoutWorktreesOnParents' started at 2026-09-24 03:13:40.658
+Test Case 'GraphTests.testMergePathsRemainDistinctWithoutWorktreesOnParents' passed (0.0 seconds)
+Test Case 'GraphTests.testMultipleWorktreesAtSameHeadNotLost' started at 2026-09-24 03:13:40.658
+Test Case 'GraphTests.testMultipleWorktreesAtSameHeadNotLost' passed (0.0 seconds)
+Test Case 'GraphTests.testTopologyWinsOverAuthorDates' started at 2026-09-24 03:13:40.659
+Test Case 'GraphTests.testTopologyWinsOverAuthorDates' passed (0.0 seconds)
+Test Case 'GraphTests.testUnrelatedHistoriesStayDisconnected' started at 2026-09-24 03:13:40.659
+Test Case 'GraphTests.testUnrelatedHistoriesStayDisconnected' passed (0.0 seconds)
+Test Suite 'GraphTests' passed at 2026-09-24 03:13:40.659
+	 Executed 12 tests, with 0 failures (0 unexpected) in 0.589 (0.589) seconds
+Test Suite 'IntegrationTests' started at 2026-09-24 03:13:40.659
+Test Case 'IntegrationTests.testBareRepositoryCanBeInspected' started at 2026-09-24 03:13:40.659
+Test Case 'IntegrationTests.testBareRepositoryCanBeInspected' passed (0.11 seconds)
+Test Case 'IntegrationTests.testChangedPrunePreviewIsRejected' started at 2026-09-24 03:13:40.769
+Test Case 'IntegrationTests.testChangedPrunePreviewIsRejected' passed (0.033 seconds)
+Test Case 'IntegrationTests.testDetachedCreationAndEmptyRepo' started at 2026-09-24 03:13:40.802
+Test Case 'IntegrationTests.testDetachedCreationAndEmptyRepo' passed (0.253 seconds)
+Test Case 'IntegrationTests.testDirtyAndIgnoredFilesBlockRemoval' started at 2026-09-24 03:13:41.055
+Test Case 'IntegrationTests.testDirtyAndIgnoredFilesBlockRemoval' passed (0.249 seconds)
+Test Case 'IntegrationTests.testExistingBranchStaysAttached' started at 2026-09-24 03:13:41.304
+Test Case 'IntegrationTests.testExistingBranchStaysAttached' passed (0.069 seconds)
+Test Case 'IntegrationTests.testExternallyCreatedWorktreeIsDiscovered' started at 2026-09-24 03:13:41.374
+Test Case 'IntegrationTests.testExternallyCreatedWorktreeIsDiscovered' passed (0.239 seconds)
+Test Case 'IntegrationTests.testInvalidBranchAndExistingDirectoryRefused' started at 2026-09-24 03:13:41.613
+Test Case 'IntegrationTests.testInvalidBranchAndExistingDirectoryRefused' passed (0.018 seconds)
+Test Case 'IntegrationTests.testLockUnlockAndProtection' started at 2026-09-24 03:13:41.631
+Test Case 'IntegrationTests.testLockUnlockAndProtection' passed (0.22 seconds)
+Test Case 'IntegrationTests.testMainCannotBeRemoved' started at 2026-09-24 03:13:41.850
+Test Case 'IntegrationTests.testMainCannotBeRemoved' passed (0.035 seconds)
+Test Case 'IntegrationTests.testMissingDiskNotSilentlyDeleted' started at 2026-09-24 03:13:41.886
+Test Case 'IntegrationTests.testMissingDiskNotSilentlyDeleted' passed (0.233 seconds)
+Test Case 'IntegrationTests.testOldDetachedHeadSurvivesHistoryLimit' started at 2026-09-24 03:13:42.118
+Test Case 'IntegrationTests.testOldDetachedHeadSurvivesHistoryLimit' passed (0.365 seconds)
+Test Case 'IntegrationTests.testOutOfRepositoryRemovalIsRejected' started at 2026-09-24 03:13:42.484
+Test Case 'IntegrationTests.testOutOfRepositoryRemovalIsRejected' passed (0.034 seconds)
+Test Case 'IntegrationTests.testOutputLimitReturnsErrorNotPartialStatus' started at 2026-09-24 03:13:42.517
+Test Case 'IntegrationTests.testOutputLimitReturnsErrorNotPartialStatus' passed (0.036 seconds)
+Test Case 'IntegrationTests.testReadOnlyScanDoesNotTouchIndexOrHead' started at 2026-09-24 03:13:42.554
+Test Case 'IntegrationTests.testReadOnlyScanDoesNotTouchIndexOrHead' passed (0.12 seconds)
+Test Case 'IntegrationTests.testRealRenameIsCountedOnce' started at 2026-09-24 03:13:42.673
+Test Case 'IntegrationTests.testRealRenameIsCountedOnce' passed (0.116 seconds)
+Test Case 'IntegrationTests.testRunnerRejectsUnapprovedCommand' started at 2026-09-24 03:13:42.790
+Test Case 'IntegrationTests.testRunnerRejectsUnapprovedCommand' passed (0.0 seconds)
+Test Case 'IntegrationTests.testSafeRemovePreservesBranch' started at 2026-09-24 03:13:42.790
+Test Case 'IntegrationTests.testSafeRemovePreservesBranch' passed (0.138 seconds)
+Test Case 'IntegrationTests.testScanRealRepoAndDeduplicateIdentityFromLinkedWorktree' started at 2026-09-24 03:13:42.928
+Test Case 'IntegrationTests.testScanRealRepoAndDeduplicateIdentityFromLinkedWorktree' passed (0.413 seconds)
+Test Case 'IntegrationTests.testStoreRoundTripAndCorruptionIsReported' started at 2026-09-24 03:13:43.341
+Test Case 'IntegrationTests.testStoreRoundTripAndCorruptionIsReported' passed (0.274 seconds)
+Test Case 'IntegrationTests.testUniqueDetachedCommitIsProtected' started at 2026-09-24 03:13:43.615
+Test Case 'IntegrationTests.testUniqueDetachedCommitIsProtected' passed (0.123 seconds)
+Test Suite 'IntegrationTests' passed at 2026-09-24 03:13:43.737
+	 Executed 20 tests, with 0 failures (0 unexpected) in 3.078 (3.078) seconds
+Test Suite 'ParserTests' started at 2026-09-24 03:13:43.737
+Test Case 'ParserTests.testAheadBehindAndUpstream' started at 2026-09-24 03:13:43.737
+Test Case 'ParserTests.testAheadBehindAndUpstream' passed (0.0 seconds)
+Test Case 'ParserTests.testBareAndUnborn' started at 2026-09-24 03:13:43.738
+Test Case 'ParserTests.testBareAndUnborn' passed (0.0 seconds)
+Test Case 'ParserTests.testCommitFieldsAllowTabsAndUnicode' started at 2026-09-24 03:13:43.738
+Test Case 'ParserTests.testCommitFieldsAllowTabsAndUnicode' passed (0.0 seconds)
+Test Case 'ParserTests.testLockedAndMissingAreIndependent' started at 2026-09-24 03:13:43.738
+Test Case 'ParserTests.testLockedAndMissingAreIndependent' passed (0.0 seconds)
+Test Case 'ParserTests.testMalformedCommitRejected' started at 2026-09-24 03:13:43.738
+Test Case 'ParserTests.testMalformedCommitRejected' passed (0.0 seconds)
+Test Case 'ParserTests.testPathsWithSpacesUnicodeNewlineAndQuotes' started at 2026-09-24 03:13:43.739
+Test Case 'ParserTests.testPathsWithSpacesUnicodeNewlineAndQuotes' passed (0.0 seconds)
+Test Case 'ParserTests.testRenameCountsOnceEvenIfOriginalPathLooksLikeStatus' started at 2026-09-24 03:13:43.739
+Test Case 'ParserTests.testRenameCountsOnceEvenIfOriginalPathLooksLikeStatus' passed (0.0 seconds)
+Test Case 'ParserTests.testTrimRemovesOnlyFinalLineEnding' started at 2026-09-24 03:13:43.739
+Test Case 'ParserTests.testTrimRemovesOnlyFinalLineEnding' passed (0.0 seconds)
+Test Case 'ParserTests.testUnknownFormatIsNotClean' started at 2026-09-24 03:13:43.739
+Test Case 'ParserTests.testUnknownFormatIsNotClean' passed (0.0 seconds)
+Test Case 'ParserTests.testUnknownStateCannotOfferRemoval' started at 2026-09-24 03:13:43.739
+Test Case 'ParserTests.testUnknownStateCannotOfferRemoval' passed (0.0 seconds)
+Test Suite 'ParserTests' passed at 2026-09-24 03:13:43.739
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'debug.xctest' passed at 2026-09-24 03:13:43.739
+	 Executed 42 tests, with 0 failures (0 unexpected) in 3.668 (3.668) seconds
+Test Suite 'All tests' passed at 2026-09-24 03:13:43.739
+	 Executed 42 tests, with 0 failures (0 unexpected) in 3.668 (3.668) seconds
+◇ Test run started.
+↳ Testing Library Version: 6.2.1 (c9d57c83568b06d)
+↳ Target Platform: x86_64-unknown-linux-gnu
+✔ Test run with 0 tests in 0 suites passed after 0.001 seconds.
+Core and syntax checks completed. Native SwiftUI typecheck, bundle build, and UI validation require macOS.

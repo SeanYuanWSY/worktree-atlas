@@ -1,0 +1,20 @@
+version = 1
+name = "Worktree Atlas"
+
+[setup]
+script = ""
+
+[[actions]]
+name = "Run"
+icon = "run"
+command = "./script/build_and_run.sh"
+
+[[actions]]
+name = "Demo"
+icon = "run"
+command = "./script/build_and_run.sh --demo"
+
+[[actions]]
+name = "Test"
+icon = "run"
+command = "swift test"

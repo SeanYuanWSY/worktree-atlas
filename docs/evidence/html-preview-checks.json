@@ -1,0 +1,19 @@
+{
+  "status": "pass",
+  "scope": "Offline HTML design preview ONLY; not native SwiftUI",
+  "checks": [
+    "3 repository cards",
+    "9 worktree markers",
+    "search match",
+    "search empty state",
+    "inspector open/close",
+    "repository focus/back",
+    "attention filter",
+    "light/dark",
+    "non-mutating placeholder action",
+    "1440px and 980px no horizontal overflow",
+    "no JavaScript page errors"
+  ],
+  "browser": "144.0.7559.96",
+  "pageErrors": []
+}

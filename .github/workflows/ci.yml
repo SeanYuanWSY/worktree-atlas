@@ -1,0 +1,31 @@
+name: macOS build and core tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  macos:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, resolved 2026-09-24
+        with:
+          persist-credentials: false
+      - name: Toolchain
+        run: swift --version && xcodebuild -version && git --version
+      - name: Compile and test
+        run: ./script/check.sh
+      - name: Archive development app
+        run: ditto -c -k --sequesterRsrc --keepParent dist/WorktreeAtlas.app dist/WorktreeAtlas-dev.zip
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: WorktreeAtlas-macOS-${{ runner.arch }}-development
+          path: dist/WorktreeAtlas-dev.zip
+          retention-days: 14
+          if-no-files-found: error
