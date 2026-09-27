@@ -2,29 +2,35 @@ import SwiftUI
 import AtlasCore
 
 enum AtlasStyle {
-    static let accent = Color(red: 0.18, green: 0.72, blue: 0.76)
+    static let accent = Color(red: 0.15, green: 0.78, blue: 0.84)
     static let laneColors: [Color] = [
         accent, Color(red: 0.55, green: 0.64, blue: 1),
-        Color(red: 1, green: 0.68, blue: 0.38),
+        Color(red: 0.73, green: 0.57, blue: 0.91),
         Color(red: 0.94, green: 0.46, blue: 0.73),
         Color(red: 0.4, green: 0.72, blue: 1),
         Color(red: 0.74, green: 0.59, blue: 1),
         Color(red: 0.49, green: 0.87, blue: 0.6)
     ]
     static func background(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color(red: 0.095, green: 0.099, blue: 0.105) : Color(nsColor: .windowBackgroundColor)
+        scheme == .dark ? Color(white: 0.094) : Color(white: 0.96)
     }
     static func card(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color(red: 0.105, green: 0.11, blue: 0.115) : Color(nsColor: .controlBackgroundColor)
+        scheme == .dark ? Color(white: 0.105) : Color(white: 0.985)
+    }
+    static func chrome(_ scheme: ColorScheme) -> Color {
+        scheme == .dark ? Color(white: 0.078) : Color(white: 0.93)
+    }
+    static func selection(_ scheme: ColorScheme) -> Color {
+        scheme == .dark ? Color(red: 0.16, green: 0.19, blue: 0.21) : Color(red: 0.84, green: 0.92, blue: 0.96)
     }
     static func worktreeSurface(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color(red: 0.16, green: 0.17, blue: 0.18) : Color(nsColor: .textBackgroundColor)
+        scheme == .dark ? Color(white: 0.13) : Color(nsColor: .textBackgroundColor)
     }
     static func selectedText(_ scheme: ColorScheme) -> Color {
         scheme == .dark ? accent : Color(red: 0, green: 0.43, blue: 0.49)
     }
     static func divider(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color.white.opacity(0.09) : .primary.opacity(0.1)
+        scheme == .dark ? Color.white.opacity(0.075) : .primary.opacity(0.1)
     }
     static func lane(_ value: Int) -> Color { laneColors[abs(value) % laneColors.count] }
     static func status(_ worktree: GitWorktree) -> Color {

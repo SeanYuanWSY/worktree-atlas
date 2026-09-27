@@ -27,6 +27,7 @@ struct DashboardView: View {
     @State private var pruneRequest: PruneRequest?
     @State private var confirmation: ConfirmationRequest?
     @State private var attentionOnly = false
+    @State private var sidebarVisible = true
     private var visibleRecords: [RepositoryRecord] {
         model.repositories.filter { record in
             let scope = selectedRepository == nil || selectedRepository == record.id
@@ -44,9 +45,13 @@ struct DashboardView: View {
         return (snapshot, worktree)
     }
     var body: some View {
-        NavigationSplitView {
-            sidebar.navigationSplitViewColumnWidth(min: 180, ideal: 205, max: 270)
-        } detail: {
+        HStack(spacing: 0) {
+            activityRail
+            Divider()
+            if sidebarVisible {
+                sidebar.frame(width: 174)
+                Divider()
+            }
             HStack(spacing: 0) {
                 content().frame(maxWidth: .infinity, maxHeight: .infinity)
                 if let (snapshot, worktree) = inspected {
@@ -59,16 +64,9 @@ struct DashboardView: View {
             }
             .background(AtlasStyle.background(colorScheme))
         }
+        .font(.system(size: 11))
+        .background(AtlasStyle.background(colorScheme))
         .navigationTitle("Worktree Atlas")
-        .toolbar {
-            ToolbarItemGroup(placement: .primaryAction) {
-                if model.busy || model.refreshing { ProgressView().controlSize(.small) }
-                Button { model.refreshAll() } label: { Label("刷新", systemImage: "arrow.clockwise") }
-                    .disabled(model.isDemo || model.busy || model.refreshing).keyboardShortcut("r")
-                Button { model.add(paths: DesktopActions.chooseRepositories()) } label: { Label("添加仓库", systemImage: "plus") }
-                    .disabled(model.busy).keyboardShortcut("o")
-            }
-        }
         .sheet(item: $createRequest) { request in
             CreateWorktreeSheet(snapshot: request.snapshot) { path, branch, base, mode in
                 model.perform(repository: request.snapshot.record.id) { repo in
@@ -120,42 +118,88 @@ struct DashboardView: View {
         .onChange(of: scenePhase) { _, value in if value == .active { model.refreshAll() } }
         .onChange(of: model.isDemo) { _, _ in selectedRepository = nil; selection = nil }
     }
-    private var sidebar: some View {
+    private var activityRail: some View {
         VStack(spacing: 0) {
-            List(selection: $selectedRepository) {
-                Button { selectedRepository = nil } label: {
-                    Label("全部仓库", systemImage: "square.grid.2x2").foregroundStyle(selectedRepository == nil ? AtlasStyle.accent : Color.primary)
-                }.buttonStyle(.plain).padding(.vertical, 6)
-                Section("仓库") {
+            Button { sidebarVisible.toggle() } label: {
+                Image(systemName: "sidebar.left").frame(width: 38, height: 42)
+            }.help("显示或隐藏工作区")
+            Button { selectedRepository = nil; selection = nil } label: {
+                Image(systemName: "point.3.connected.trianglepath.dotted")
+                    .foregroundStyle(AtlasStyle.accent).frame(width: 38, height: 42)
+                    .overlay(alignment: .leading) { Rectangle().fill(AtlasStyle.accent).frame(width: 2, height: 24) }
+            }.help("全部仓库提交图")
+            Button { model.add(paths: DesktopActions.chooseRepositories()) } label: {
+                Image(systemName: "folder.badge.plus").frame(width: 38, height: 42)
+            }.disabled(model.busy).help("添加仓库")
+            Spacer()
+            SettingsLink { Image(systemName: "gearshape").frame(width: 38, height: 38) }
+        }
+        .font(.system(size: 17, weight: .light)).foregroundStyle(.secondary)
+        .buttonStyle(.plain).frame(width: 38)
+        .background(AtlasStyle.background(colorScheme))
+    }
+    private var sidebar: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text("工作区").font(.system(size: 10, weight: .medium))
+                Spacer()
+                Button { model.add(paths: DesktopActions.chooseRepositories()) } label: { Image(systemName: "plus") }
+                    .disabled(model.busy).help("添加仓库")
+            }.padding(.horizontal, 12).frame(height: 31)
+            Button { selectedRepository = nil; selection = nil } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "chevron.down").font(.system(size: 8))
+                    Text("仓库").fontWeight(.semibold)
+                    Spacer()
+                    Text("\(model.repositories.count)").foregroundStyle(.secondary)
+                }.padding(.horizontal, 10).frame(height: 25)
+            }
+            ScrollView {
+                VStack(spacing: 0) {
                     ForEach(model.repositories) { record in
-                        Label(record.displayName, systemImage: "shippingbox").tag(record.id)
-                            .contextMenu {
-                                Button("从总览移除（不删除文件）") { model.forget(record.id); if selectedRepository == record.id { selectedRepository = nil } }
+                        Button { selectedRepository = record.id; selection = nil } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "chevron.right").font(.system(size: 8)).foregroundStyle(.secondary)
+                                Image(systemName: "folder").foregroundStyle(selectedRepository == record.id ? AtlasStyle.accent : .secondary)
+                                Text(record.displayName).lineLimit(1)
+                                Spacer(minLength: 2)
+                                if model.failures[record.id] != nil {
+                                    Circle().fill(.orange).frame(width: 4, height: 4)
+                                }
                             }
+                            .padding(.leading, 15).padding(.trailing, 10).frame(height: 25)
+                            .background(selectedRepository == record.id ? AtlasStyle.selection(colorScheme) : .clear)
+                        }
+                        .help(record.rootPath)
+                        .contextMenu {
+                            Button("从总览移除（不删除文件）") {
+                                model.forget(record.id)
+                                if selectedRepository == record.id { selectedRepository = nil }
+                            }
+                        }
                     }
                 }
-            }.listStyle(.sidebar)
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(spacing: 7) {
-                    Circle().fill(model.isDemo ? Color.indigo : AtlasStyle.accent).frame(width: 6, height: 6)
-                    Text(model.isDemo ? "演示数据 · 禁用写操作" : model.paused ? "自动刷新已暂停" : "本地优先 · 自动刷新")
-                        .font(.system(size: 10)).foregroundStyle(.secondary)
+            }
+            Divider()
+            HStack(spacing: 5) {
+                Circle().fill(model.isDemo ? Color.purple : AtlasStyle.accent).frame(width: 5, height: 5)
+                Text(model.isDemo ? "演示工作区" : "本地工作区").foregroundStyle(.secondary)
+                Spacer()
+                if model.isDemo {
+                    Button { model.leaveDemo() } label: { Image(systemName: "arrow.uturn.backward") }.help("返回真实仓库")
+                } else {
+                    Button { model.paused.toggle() } label: { Image(systemName: model.paused ? "play" : "pause") }
+                        .help(model.paused ? "恢复自动刷新" : "暂停自动刷新")
                 }
-                if model.isDemo { Button("返回真实仓库") { model.leaveDemo() }.font(.caption) }
-                else { Toggle("暂停自动刷新", isOn: $model.paused).toggleStyle(.checkbox).font(.caption) }
-                HStack {
-                    SettingsLink { Image(systemName: "gearshape") }
-                    Spacer()
-                    Text("0.1.0-dev").font(.system(size: 10, design: .monospaced)).foregroundStyle(.tertiary)
-                }.buttonStyle(.borderless)
-            }.padding(16)
-        }.background(AtlasStyle.card(colorScheme))
+            }.font(.system(size: 10)).padding(.horizontal, 10).frame(height: 26)
+        }
+        .buttonStyle(.plain).background(AtlasStyle.background(colorScheme))
     }
     private func content() -> some View {
         VStack(spacing: 0) {
+            header
             ScrollView {
-                VStack(alignment: .leading, spacing: 10) {
-                    header
+                VStack(alignment: .leading, spacing: 0) {
                     if model.repositories.isEmpty {
                         ContentUnavailableView {
                             Label("把工作树放回图里", systemImage: "point.3.connected.trianglepath.dotted")
@@ -168,7 +212,7 @@ struct DashboardView: View {
                     } else if visibleRecords.isEmpty {
                         ContentUnavailableView.search(text: search)
                     } else {
-                        LazyVStack(spacing: 12) {
+                        LazyVStack(spacing: 0) {
                             ForEach(visibleRecords) { record in
                                 if let snapshot = model.snapshots[record.id] {
                                     RepositoryCardView(snapshot: snapshot, error: model.failures[record.id], focused: selectedRepository != nil,
@@ -189,7 +233,7 @@ struct DashboardView: View {
                             }
                         }
                     }
-                }.padding(14)
+                }
             }
             Divider()
             HStack(spacing: 18) {
@@ -197,35 +241,50 @@ struct DashboardView: View {
                 Text("\(model.allWorktrees.count) 个工作树")
                 if model.unknownCount > 0 { Text("\(model.unknownCount) 个状态未知").foregroundStyle(.orange) }
                 Spacer()
-                Text("不执行 commit / push / merge / rebase").foregroundStyle(.secondary)
-            }.font(.system(size: 10)).padding(.horizontal, 24).padding(.vertical, 10)
+                Text(model.isDemo ? "演示 · 只读" : model.paused ? "刷新已暂停" : "本地 Git").foregroundStyle(.secondary)
+            }.font(.system(size: 10)).padding(.horizontal, 12).frame(height: 23)
         }
     }
     private var header: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 7) {
-                    Text(selectedRepository == nil ? "全部仓库" : model.repositories.first(where: { $0.id == selectedRepository })?.displayName ?? "仓库")
-                        .font(.system(size: 15, weight: .semibold))
-                    Text(model.isDemo ? "演示模式 · 仓库提交图" : "仓库提交图")
-                        .font(.system(size: 11)).foregroundStyle(.secondary)
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                HStack(spacing: 6) {
+                    Image(systemName: "point.3.connected.trianglepath.dotted")
+                    Text("提交图")
                 }
-                Spacer(minLength: 10)
-                if selectedRepository != nil { Button("返回全部") { selectedRepository = nil; selection = nil }.controlSize(.small) }
-            }
-            HStack(spacing: 12) {
-                HStack {
-                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                    TextField("搜索仓库、路径或工作树分支", text: $search).textFieldStyle(.plain)
-                }.padding(.horizontal, 10).frame(height: 29)
-                    .background(AtlasStyle.card(colorScheme), in: RoundedRectangle(cornerRadius: 5))
-                    .overlay(RoundedRectangle(cornerRadius: 5).strokeBorder(AtlasStyle.divider(colorScheme)))
-                    .frame(maxWidth: 520)
-                Toggle("仅待处理", isOn: $attentionOnly).toggleStyle(.button).controlSize(.small)
+                .padding(.horizontal, 12).frame(height: 30)
+                .overlay(alignment: .top) { Rectangle().fill(AtlasStyle.accent).frame(height: 1) }
+                .background(AtlasStyle.card(colorScheme))
                 Spacer()
-                if model.isDemo { MetadataPill(text: "DEMO · 非真实仓库", color: .indigo) }
+                if model.refreshing || model.busy { ProgressView().controlSize(.mini).padding(.trailing, 9) }
+                Button { model.refreshAll() } label: { Image(systemName: "arrow.clockwise") }
+                    .disabled(model.isDemo || model.busy || model.refreshing).help("刷新全部仓库")
+                Button { model.add(paths: DesktopActions.chooseRepositories()) } label: { Image(systemName: "plus") }
+                    .disabled(model.busy).help("添加仓库").padding(.horizontal, 12)
             }
+            .background(AtlasStyle.chrome(colorScheme))
+            Divider()
+            HStack(spacing: 8) {
+                Image(systemName: "square.stack.3d.up").foregroundStyle(.secondary)
+                Menu {
+                    Button("全部仓库") { selectedRepository = nil; selection = nil }
+                    Divider()
+                    ForEach(model.repositories) { record in
+                        Button(record.displayName) { selectedRepository = record.id; selection = nil }
+                    }
+                } label: {
+                    Text(selectedRepository.flatMap { id in model.repositories.first(where: { $0.id == id })?.displayName } ?? "全部仓库")
+                }.menuStyle(.borderlessButton).fixedSize()
+                Rectangle().fill(AtlasStyle.divider(colorScheme)).frame(width: 1, height: 12)
+                Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                TextField("搜索仓库、路径或工作树分支", text: $search).textFieldStyle(.plain)
+                Toggle(isOn: $attentionOnly) { Image(systemName: "line.3.horizontal.decrease") }
+                    .toggleStyle(.button).controlSize(.mini).help("仅显示待处理仓库")
+            }
+            .padding(.horizontal, 10).frame(height: 30)
+            Divider()
         }
+        .font(.system(size: 11)).buttonStyle(.plain)
     }
     private func canMutate(_ id: UUID) -> Bool { !model.isDemo && !model.busy && model.failures[id] == nil }
     private func requestRemoval(_ snapshot: RepositorySnapshot, _ worktree: GitWorktree) {

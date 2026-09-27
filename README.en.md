@@ -2,11 +2,11 @@
 
 **Your worktrees, back on the graph.** A focused native macOS workspace that displays multiple repositories and attaches each worktree to its real Git HEAD.
 
-This **0.1.0-dev source release** has been built, ad-hoc signed, and opened as a native app on an Apple Silicon Mac. Its current interface uses a dense, GitLens-inspired commit table: charcoal dark surfaces, ancestry lanes, branch/worktree labels, subjects, authors, relative dates, and short SHAs. Multiple repositories remain visible as stacked, collapsible panels. Click a subject for the full commit message or a worktree for its details. Disposable repositories verified the native create, lock, unlock, remove, and prune flows. All 49 current Swift Testing tests passed locally and in the [GitHub macOS build for this redesign](https://github.com/SeanYuanWSY/worktree-atlas/actions/runs/36329694140). See [validation](docs/VALIDATION.md).
+This **0.1.0-dev source release** has been built, ad-hoc signed, and opened as a native app on an Apple Silicon Mac. Its current interface follows the supplied GitLens reference with compact editor chrome, edge-to-edge repository panels, 22pt rows, thin ring nodes, vertical ancestry rails with short bends, and small branch/worktree labels. The main checkout first-parent chain stays on the left; uncommitted changes sit directly above the corresponding HEAD. Subjects, author initials, relative dates, and short SHAs stay aligned. Multiple repositories remain visible as stacked, collapsible panels. Click a subject for the full commit message or a worktree for its details. Disposable repositories verified the native create, lock, unlock, remove, and prune flows. All 49 current Swift Testing tests passed locally and in the [previous GitHub macOS build](https://github.com/SeanYuanWSY/worktree-atlas/actions/runs/36329694140). See [validation](docs/VALIDATION.md).
 
 ## Scope
 
-Multiple repository cards; real ancestry edges; compact/full-loaded-history views; worktree inspection; branch/path search; attention filtering; create/remove/lock/unlock/prune; external app launch; foreground polling; native light/dark appearance; demo mode.
+Multiple repository panels; real ancestry edges; paged loaded history; worktree inspection; branch/path search; attention filtering; create/remove/lock/unlock/prune; external app launch; foreground polling; native light/dark appearance; demo mode.
 
 No commit, push, pull, fetch, merge, rebase, cherry-pick, branch deletion, built-in terminal or AI agents. Worktrees are labels on commits, not a fabricated parent-child hierarchy.
 

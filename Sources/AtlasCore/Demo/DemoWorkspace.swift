@@ -12,22 +12,46 @@ public enum DemoWorkspace {
             String(format: "%07x", 0xa000000 | (index << 16) | (value << 8) | 0x5a)
                 + String(repeating: "0", count: 33)
         }
-        func commit(_ n: Int, _ parents: [Int], _ title: String, refs: [GitRef] = []) -> CommitNode {
-            let date = Date().addingTimeInterval(-Double((11 - n) * 7200 + index * 3600))
-            return CommitNode(sha: sha(n), parentSHAs: parents.map(sha), authorName: "Demo", authoredDate: date,
-                              subject: title, body: n >= 7 ? "Keep the worktree graph readable while preserving the real commit ancestry." : "", refs: refs)
+        let subjects = [
+            "Initialize workspace registry", "Read Git worktree porcelain records", "Resolve repository identities",
+            "Track local branches and cached remote refs", "Add filesystem identity checks", "Preserve detached worktree heads",
+            "Build repository discovery pipeline", "Add refresh cancellation support", "Show unknown worktree status",
+            "Validate branch names before creation", "Keep locked worktrees protected", "Add disposable repository fixtures",
+            "Handle repositories with unrelated histories", "Preserve merge parent relationships", "Improve history boundary labels",
+            "Read complete commit messages", "Add branch and path filtering", "Restore registered workspaces on launch",
+            "Keep selection stable during refresh", "Show cached ahead and behind counts", "Add worktree inspection panel",
+            "Retain Unicode paths and branch names", "Improve error messages for offline volumes", "Bound concurrent repository scans",
+            "Add native keyboard shortcuts", "Keep commit graph colors consistent", "Support multiple worktrees at one HEAD",
+            "Add safe worktree removal checks", "Preserve branch references after removal", "Add pruning preview confirmation",
+            "Document worktree lifecycle", "Improve repository switcher", "Add scanner regression fixtures",
+            "Align commit metadata columns", "Refine branch rail geometry", "Polish worktree navigation",
+            "Add compact graph labels", "Preserve graph selection while scrolling", "Handle stale directory records",
+            "Verify scanner recovery paths", "Draft workspace navigation guide", "Document graph history limits",
+            "Refine repository toolbar", "Improve native window layout", "Merge scanner diagnostics",
+            "Keep workspace controls compact", "Refine graph node interactions", "Expand worktree documentation"
+        ]
+        func commit(_ n: Int, _ parents: [Int], refs: [GitRef] = []) -> CommitNode {
+            let date = Date().addingTimeInterval(-Double((49 - n) * 14400 + index * 3600))
+            return CommitNode(sha: sha(n), parentSHAs: parents.map(sha),
+                              authorName: ["Alex", "Morgan", "Sam"][(n + index) % 3], authoredDate: date,
+                              subject: subjects[n - 1],
+                              body: "\(subjects[n - 1]).\n\nKeep the worktree state visible in its repository graph and preserve the original commit relationships.", refs: refs)
         }
         let path = "/demo/" + name
-        let commits = [commit(9, [7], "Refine graph interactions"), commit(8, [6], "Improve diagnostics"),
-                       commit(7, [5], "Add graph canvas"), commit(6, [5], "Scanner fixtures"),
-                       commit(5, [4], "Shared base"), commit(10, [4], "Mainline updates", refs: [GitRef(name: "main", kind: .localBranch)]),
-                       commit(4, [3], "Workspace registry"), commit(3, [2], "Core models"),
-                       commit(2, [1], "Bootstrap"), commit(1, [], "Initial commit")]
-        let worktrees = [GitWorktree(path: path, headSHA: sha(10), branchName: "main", isMain: true, hasUpstream: true, statusKnown: true),
-                        GitWorktree(path: path + "-graph", headSHA: sha(9), branchName: branchNames[0], dirtyCount: index == 1 ? 3 : 0, aheadCount: 2, hasUpstream: true, statusKnown: true),
-                        GitWorktree(path: path + "-fix", headSHA: sha(8), branchName: branchNames[1], isLocked: index == 2, statusKnown: true)]
+        var commits = (1...36).map { commit($0, $0 == 1 ? [] : [$0 - 1]) }
+        commits += [commit(37, [34]), commit(38, [37]), commit(39, [33]),
+                    commit(40, [39], refs: [GitRef(name: branchNames[1], kind: .localBranch)]),
+                    commit(41, [31]), commit(42, [41]), commit(43, [36]), commit(44, [43]),
+                    commit(45, [44, 40]),
+                    commit(46, [45], refs: [GitRef(name: "main", kind: .localBranch), GitRef(name: "origin/main", kind: .remoteBranch)]),
+                    commit(47, [38], refs: [GitRef(name: branchNames[0], kind: .localBranch)]),
+                    commit(48, [42], refs: [GitRef(name: "docs/worktree-guide", kind: .localBranch)])]
+        let worktrees = [GitWorktree(path: path, headSHA: sha(46), branchName: "main", isMain: true, hasUpstream: true, statusKnown: true),
+                        GitWorktree(path: path + "-graph", headSHA: sha(47), branchName: branchNames[0], dirtyCount: index == 1 ? 3 : 0, aheadCount: 2, hasUpstream: true, statusKnown: true),
+                        GitWorktree(path: path + "-fix", headSHA: sha(40), branchName: branchNames[1], isLocked: index == 2, statusKnown: true),
+                        GitWorktree(path: path + "-docs", headSHA: sha(48), branchName: "docs/worktree-guide", dirtyCount: index == 1 ? 1 : 0, statusKnown: true)]
         let id = UUID(uuidString: String(format: "00000000-0000-0000-0000-%012d", index))!
         return RepositorySnapshot(record: RepositoryRecord(id: id, displayName: name, rootPath: path, commonDirectory: path + "/.git", defaultBranch: "main", lastScannedAt: Date()),
-                                  worktrees: worktrees, commits: commits, branches: [BranchStatus(branchName: "main", headSHA: sha(10))])
+                                  worktrees: worktrees, commits: commits, branches: [BranchStatus(branchName: "main", headSHA: sha(46))])
     }
 }

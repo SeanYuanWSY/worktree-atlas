@@ -11,15 +11,15 @@ struct WorktreeInspector: View {
     let onError: (String) -> Void
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 22) {
+            VStack(alignment: .leading, spacing: 14) {
                 HStack {
-                    Text("WORKTREE").font(.system(size: 10, weight: .semibold, design: .monospaced)).tracking(2).foregroundStyle(.secondary)
+                    Text("WORKTREE").font(.system(size: 10, weight: .semibold, design: .monospaced)).tracking(0.6).foregroundStyle(.secondary)
                     Spacer()
                     Button(action: onClose) { Image(systemName: "xmark") }.buttonStyle(.borderless).help("关闭详情")
                 }
                 VStack(alignment: .leading, spacing: 9) {
-                    Image(systemName: "arrow.triangle.branch").font(.system(size: 30)).foregroundStyle(.teal)
-                    Text(worktree.title).font(.title2.weight(.semibold)).textSelection(.enabled)
+                    Image(systemName: "arrow.triangle.branch").font(.system(size: 16)).foregroundStyle(.teal)
+                    Text(worktree.title).font(.system(size: 13, weight: .medium)).textSelection(.enabled)
                     HStack(spacing: 5) {
                         MetadataPill(text: worktree.statusSummary, color: AtlasStyle.status(worktree))
                         if worktree.isMain { MetadataPill(text: "主工作树") }
@@ -62,8 +62,8 @@ struct WorktreeInspector: View {
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 if !canMutate { Text("演示模式、操作中或数据过期时，写入操作不可用。").font(.caption).foregroundStyle(.secondary) }
-            }.padding(22)
-        }.frame(minWidth: 285, idealWidth: 310, maxWidth: 340)
+            }.padding(12)
+        }.font(.system(size: 11)).frame(width: 250)
     }
     private var hasHEAD: Bool {
         !worktree.headSHA.isEmpty && !worktree.headSHA.allSatisfy { $0 == "0" }

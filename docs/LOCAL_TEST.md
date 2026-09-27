@@ -13,7 +13,8 @@ Checked boxes reflect the 2026-09-24 and 2026-09-27 Apple Silicon runs documente
 - [x] Opening an inspector collapses the dashboard to an appropriate column count.
 - [x] The dense dark native demo shows real ancestry lanes, worktree HEAD labels, a dirty-worktree row, subject, author, relative time and SHA columns. Clicking a subject opens its full message; clicking a worktree opens its inspector. Narrow windows may scroll horizontally to retain all columns.
 - [ ] Graph labels and scroll areas remain usable with very long branch names and unusually large commit bodies.
-- [ ] 在超过 40 条提交的真实仓库中，目视核对分页边界虚线与同一 HEAD 多工作树标签的横向浏览；本轮已完成代码与构建检查，尚未完成这两项原生目视检查。
+- [x] 在 48 条提交的原生演示图中切换第二页，8 条剩余历史及从上一页延续的虚线均可见；单仓库聚焦可展示同一已载入历史。
+- [ ] 在超过 40 条提交的真实仓库中复核跨页多分支边界，并检查同一 HEAD 多工作树标签的横向浏览。
 
 ## Disposable real repositories
 
