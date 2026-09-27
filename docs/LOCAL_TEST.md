@@ -40,4 +40,5 @@ Run `./script/create_fixtures.sh`. It prints a new temporary root and never over
 - [x] Confirm that no repository exists, select the new public `SeanYuanWSY/worktree-atlas` target, and review the fixed publication manifest.
 - [x] Create and push the public repository; URL `https://github.com/SeanYuanWSY/worktree-atlas`, visibility `PUBLIC`, default branch `main`, initial commit `0b2296c4eba54274f982c8a19b5c8091d8bde855`.
 - [x] Read the actual [initial macOS Actions result](https://github.com/SeanYuanWSY/worktree-atlas/actions/runs/35975786842): Xcode 16.4, 48 tests passed, native app built, development artifact uploaded. No release tag was created.
+- [x] The current dense graph redesign passed [macOS Actions run 36329694140](https://github.com/SeanYuanWSY/worktree-atlas/actions/runs/36329694140): 49 tests, native archive, development artifact upload.
 - [ ] If distributing a trusted binary, perform Developer ID signing, submit for notarization, staple and verify the actual artifact. Ad-hoc signing alone is not notarization.
