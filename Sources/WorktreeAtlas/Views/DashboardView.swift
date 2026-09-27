@@ -48,9 +48,7 @@ struct DashboardView: View {
             sidebar.navigationSplitViewColumnWidth(min: 180, ideal: 205, max: 270)
         } detail: {
             HStack(spacing: 0) {
-                GeometryReader { geometry in
-                    content(columnCount: selectedRepository == nil && geometry.size.width > 1180 ? 2 : 1)
-                }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                content().frame(maxWidth: .infinity, maxHeight: .infinity)
                 if let (snapshot, worktree) = inspected {
                     Divider()
                     WorktreeInspector(worktree: worktree, repository: snapshot.record,
@@ -153,10 +151,10 @@ struct DashboardView: View {
             }.padding(16)
         }.background(AtlasStyle.card(colorScheme))
     }
-    private func content(columnCount: Int) -> some View {
+    private func content() -> some View {
         VStack(spacing: 0) {
             ScrollView {
-                VStack(alignment: .leading, spacing: 23) {
+                VStack(alignment: .leading, spacing: 10) {
                     header
                     if model.repositories.isEmpty {
                         ContentUnavailableView {
@@ -170,7 +168,7 @@ struct DashboardView: View {
                     } else if visibleRecords.isEmpty {
                         ContentUnavailableView.search(text: search)
                     } else {
-                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(minimum: 250), spacing: 20), count: columnCount), spacing: 20) {
+                        LazyVStack(spacing: 12) {
                             ForEach(visibleRecords) { record in
                                 if let snapshot = model.snapshots[record.id] {
                                     RepositoryCardView(snapshot: snapshot, error: model.failures[record.id], focused: selectedRepository != nil,
@@ -191,7 +189,7 @@ struct DashboardView: View {
                             }
                         }
                     }
-                }.padding(26)
+                }.padding(14)
             }
             Divider()
             HStack(spacing: 18) {
@@ -204,15 +202,13 @@ struct DashboardView: View {
         }
     }
     private var header: some View {
-        VStack(alignment: .leading, spacing: 18) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 7) {
-                    Text(model.isDemo ? "DEMO WORKSPACE" : "YOUR WORK, IN CONTEXT")
-                        .font(.system(size: 10, weight: .semibold, design: .monospaced)).tracking(2).foregroundStyle(AtlasStyle.accent)
-                    Text(selectedRepository == nil ? "所有工作树，一眼看清。" : model.repositories.first(where: { $0.id == selectedRepository })?.displayName ?? "仓库")
-                        .font(.system(size: 28, weight: .semibold))
-                    Text("纵向阅读真实提交、分叉和每棵工作树的 HEAD。")
-                        .font(.system(size: 12)).foregroundStyle(.secondary)
+                    Text(selectedRepository == nil ? "全部仓库" : model.repositories.first(where: { $0.id == selectedRepository })?.displayName ?? "仓库")
+                        .font(.system(size: 15, weight: .semibold))
+                    Text(model.isDemo ? "演示模式 · 仓库提交图" : "仓库提交图")
+                        .font(.system(size: 11)).foregroundStyle(.secondary)
                 }
                 Spacer(minLength: 10)
                 if selectedRepository != nil { Button("返回全部") { selectedRepository = nil; selection = nil }.controlSize(.small) }
@@ -221,7 +217,10 @@ struct DashboardView: View {
                 HStack {
                     Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                     TextField("搜索仓库、路径或工作树分支", text: $search).textFieldStyle(.plain)
-                }.padding(10).background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 9)).frame(maxWidth: 350)
+                }.padding(.horizontal, 10).frame(height: 29)
+                    .background(AtlasStyle.card(colorScheme), in: RoundedRectangle(cornerRadius: 5))
+                    .overlay(RoundedRectangle(cornerRadius: 5).strokeBorder(AtlasStyle.divider(colorScheme)))
+                    .frame(maxWidth: 520)
                 Toggle("仅待处理", isOn: $attentionOnly).toggleStyle(.button).controlSize(.small)
                 Spacer()
                 if model.isDemo { MetadataPill(text: "DEMO · 非真实仓库", color: .indigo) }

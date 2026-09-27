@@ -2,7 +2,7 @@ import SwiftUI
 import AtlasCore
 
 enum AtlasStyle {
-    static let accent = Color(red: 0.31, green: 0.91, blue: 0.94)
+    static let accent = Color(red: 0.18, green: 0.72, blue: 0.76)
     static let laneColors: [Color] = [
         accent, Color(red: 0.55, green: 0.64, blue: 1),
         Color(red: 1, green: 0.68, blue: 0.38),
@@ -12,19 +12,19 @@ enum AtlasStyle {
         Color(red: 0.49, green: 0.87, blue: 0.6)
     ]
     static func background(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color(red: 0.025, green: 0.038, blue: 0.057) : Color(nsColor: .windowBackgroundColor)
+        scheme == .dark ? Color(red: 0.095, green: 0.099, blue: 0.105) : Color(nsColor: .windowBackgroundColor)
     }
     static func card(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color(red: 0.055, green: 0.076, blue: 0.105) : Color(nsColor: .controlBackgroundColor)
+        scheme == .dark ? Color(red: 0.105, green: 0.11, blue: 0.115) : Color(nsColor: .controlBackgroundColor)
     }
     static func worktreeSurface(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color(red: 0.085, green: 0.126, blue: 0.16) : Color(nsColor: .textBackgroundColor)
+        scheme == .dark ? Color(red: 0.16, green: 0.17, blue: 0.18) : Color(nsColor: .textBackgroundColor)
     }
     static func selectedText(_ scheme: ColorScheme) -> Color {
         scheme == .dark ? accent : Color(red: 0, green: 0.43, blue: 0.49)
     }
     static func divider(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? accent.opacity(0.1) : .primary.opacity(0.07)
+        scheme == .dark ? Color.white.opacity(0.09) : .primary.opacity(0.1)
     }
     static func lane(_ value: Int) -> Color { laneColors[abs(value) % laneColors.count] }
     static func status(_ worktree: GitWorktree) -> Color {

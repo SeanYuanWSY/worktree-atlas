@@ -11,8 +11,9 @@ Checked boxes reflect the 2026-09-24 and 2026-09-27 Apple Silicon runs documente
 - [x] Restarting the native app restored a disposable real repository registration; demo records did not replace the saved registry.
 - [ ] Light, dark, 1380×880 and 980×660 layouts have no clipped or unreadable controls. Light/dark and the macOS half-screen layout were inspected; exact pixel sizes remain untested.
 - [x] Opening an inspector collapses the dashboard to an appropriate column count.
-- [x] The redesigned vertical graph scrolls without horizontal panning; the native demo shows commit title, time, author, body preview, ancestry lanes and HEAD badges.
+- [x] The dense dark native demo shows real ancestry lanes, worktree HEAD labels, a dirty-worktree row, subject, author, relative time and SHA columns. Clicking a subject opens its full message; clicking a worktree opens its inspector. Narrow windows may scroll horizontally to retain all columns.
 - [ ] Graph labels and scroll areas remain usable with very long branch names and unusually large commit bodies.
+- [ ] 在超过 40 条提交的真实仓库中，目视核对分页边界虚线与同一 HEAD 多工作树标签的横向浏览；本轮已完成代码与构建检查，尚未完成这两项原生目视检查。
 
 ## Disposable real repositories
 
