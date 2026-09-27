@@ -43,6 +43,15 @@ import Testing
         #expect((WorktreeGraphProjector.project(a).nodes[0].worktrees.count) == (2))
     }
     @Test
+    func testRealCommitBodyAndCommitTimeAreScanned() async throws {
+        let f = try Fixture(); defer { f.close() }
+        _ = try Self.git(["commit", "--allow-empty", "-m", "Timeline title", "-m", "Details line one\nDetails line two"], at: f.repo)
+        let snapshot = try await RepositoryScanner().scan(path: f.repo)
+        let head = try #require(snapshot.commits.first { $0.subject == "Timeline title" })
+        #expect(head.body == "Details line one\nDetails line two")
+        #expect(head.committedDate.timeIntervalSince1970 > 0)
+    }
+    @Test
     func testSafeRemovePreservesBranch() async throws {
         let f = try Fixture(); defer { f.close() }
         let op = WorktreeOperator()

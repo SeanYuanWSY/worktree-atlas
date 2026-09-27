@@ -1,48 +1,45 @@
 import SwiftUI
 import AtlasCore
 
+/// A vertical commit graph. Lines represent real ancestor edges and badges mark HEADs.
 struct GraphCanvasView: View {
     let snapshot: RepositorySnapshot
     let compact: Bool
     let selectedPath: String?
     let onSelect: (GitWorktree) -> Void
-    @State private var zoom: Double = 1
-    @State private var followsFit = false
+    @Environment(\.colorScheme) private var colorScheme
     @State private var page = 0
-
+    @State private var detailedCommit: CommitNode?
     private let baseGraph: WorktreeGraph
-    private var pageCount: Int { max(1, (baseGraph.nodes.count + 79) / 80) }
-    private var currentPage: Int { min(max(0, page), pageCount - 1) }
-    private var graph: WorktreeGraph {
-        if compact { return baseGraph }
-        let current = currentPage
-        let range = current * 80..<min((current + 1) * 80, baseGraph.nodes.count)
-        var nodes = Array(baseGraph.nodes[range])
-        let visible = Set(nodes.map(\.id))
-        let minimumColumn = nodes.map(\.column).min() ?? 0
-        for i in nodes.indices {
-            nodes[i].row = i; nodes[i].column -= minimumColumn
-            nodes[i].isHistoryBoundary = nodes[i].isHistoryBoundary || nodes[i].commit.parentSHAs.contains { !visible.contains($0) }
-        }
-        return WorktreeGraph(nodes: nodes,
-            edges: baseGraph.edges.filter { visible.contains($0.childSHA) && visible.contains($0.parentSHA) },
-            unplacedWorktrees: baseGraph.unplacedWorktrees, totalCommits: baseGraph.totalCommits)
-    }
+    private let pageSize = 30
+
     init(snapshot: RepositorySnapshot, compact: Bool, selectedPath: String?, onSelect: @escaping (GitWorktree) -> Void) {
         self.snapshot = snapshot; self.compact = compact; self.selectedPath = selectedPath; self.onSelect = onSelect
         self.baseGraph = WorktreeGraphProjector.project(snapshot, compact: compact)
     }
-    private var stepX: CGFloat { 170 }
-    private var stepY: CGFloat { 160 + CGFloat(max(0, (graph.nodes.map { $0.worktrees.count }.max() ?? 1) - 1)) * 65 }
-    private var canvasSize: CGSize {
-        CGSize(width: max(480, CGFloat(graph.nodes.map(\.column).max() ?? 0) * stepX + 190),
-               height: max(220, CGFloat(graph.laneCount - 1) * stepY + 220))
+    private var pageCount: Int { max(1, (baseGraph.nodes.count + pageSize - 1) / pageSize) }
+    private var currentPage: Int { min(max(0, page), pageCount - 1) }
+    private var graph: WorktreeGraph {
+        if compact { return baseGraph }
+        let range = currentPage * pageSize..<min((currentPage + 1) * pageSize, baseGraph.nodes.count)
+        var nodes = Array(baseGraph.nodes[range])
+        let visible = Set(nodes.map(\.id))
+        for i in nodes.indices { nodes[i].row = i }
+        return WorktreeGraph(nodes: nodes,
+            edges: baseGraph.edges.filter { visible.contains($0.childSHA) && visible.contains($0.parentSHA) },
+            unplacedWorktrees: baseGraph.unplacedWorktrees, totalCommits: baseGraph.totalCommits)
     }
-    private func point(_ node: AtlasGraphNode) -> CGPoint {
-        CGPoint(x: 95 + CGFloat(node.column) * stepX, y: 60 + CGFloat(node.lane) * stepY)
+    private func rowHeight(_ node: AtlasGraphNode) -> CGFloat {
+        92 + CGFloat(node.worktrees.count) * 34 + (node.commit.body.isEmpty ? 0 : 28)
     }
-    private func fittedZoom(for width: CGFloat) -> Double {
-        max(0.45, min(1, Double((width - 12) / canvasSize.width)))
+    private func nodePositions(_ nodes: [AtlasGraphNode]) -> [String: CGFloat] {
+        var positions: [String: CGFloat] = [:]
+        var top: CGFloat = 0
+        for node in nodes {
+            positions[node.id] = top + 28
+            top += rowHeight(node)
+        }
+        return positions
     }
     var body: some View {
         VStack(spacing: 0) {
@@ -51,33 +48,8 @@ struct GraphCanvasView: View {
                     description: Text("空仓库或 HEAD 无法读取时，工作树仍显示在下方。"))
                     .frame(height: 190)
             } else {
-                GeometryReader { geometry in
-                    ScrollView([.horizontal, .vertical]) {
-                        graphContent.frame(width: canvasSize.width, height: canvasSize.height)
-                            .scaleEffect(zoom, anchor: .topLeading)
-                            .frame(width: canvasSize.width * zoom, height: canvasSize.height * zoom, alignment: .topLeading)
-                    }
-                    .overlay(alignment: .bottomTrailing) {
-                        HStack(spacing: 10) {
-                            Button { followsFit = false; zoom = max(0.45, zoom - 0.15) } label: { Image(systemName: "minus.magnifyingglass") }
-                            Button("适应") { followsFit = true; zoom = fittedZoom(for: geometry.size.width) }
-                            Button { followsFit = false; zoom = min(1.6, zoom + 0.15) } label: { Image(systemName: "plus.magnifyingglass") }
-                        }.buttonStyle(.borderless).font(.caption)
-                            .padding(8).background(.regularMaterial, in: Capsule()).padding(8)
-                    }
-                    .onAppear {
-                        if compact { followsFit = true; zoom = fittedZoom(for: geometry.size.width) }
-                    }
-                    .onChange(of: geometry.size.width) { _, width in
-                        if followsFit { zoom = fittedZoom(for: width) }
-                    }
-                    .onChange(of: canvasSize.width) { _, _ in
-                        if followsFit { zoom = fittedZoom(for: geometry.size.width) }
-                    }
-                    .onChange(of: compact) { _, isCompact in
-                        if isCompact { followsFit = true; zoom = fittedZoom(for: geometry.size.width) }
-                    }
-                }.frame(height: compact ? min(420, max(255, canvasSize.height * zoom)) : 480)
+                ScrollView(.vertical) { timeline }
+                    .frame(height: compact ? 530 : 620)
             }
             if !graph.unplacedWorktrees.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
@@ -87,75 +59,142 @@ struct GraphCanvasView: View {
                     }
                 }.frame(maxWidth: .infinity, alignment: .leading).padding(16)
             }
-            HStack(spacing: 6) {
-                Image(systemName: "point.topleft.down.curvedto.point.bottomright.up")
+            HStack(spacing: 7) {
+                Image(systemName: "point.3.connected.trianglepath.dotted")
                 if compact { Text("\(graph.nodes.count) 个节点 · 折叠 \(graph.hiddenCommits) 个提交") }
                 else {
                     Button { page = max(0, currentPage - 1) } label: { Image(systemName: "chevron.left") }.disabled(currentPage == 0)
-                    Text("第 \(currentPage + 1) / \(pageCount) 页 · 每页最多 80 个提交")
+                    Text("第 \(currentPage + 1) / \(pageCount) 页 · 每页最多 \(pageSize) 个提交")
                     Button { page = min(pageCount - 1, currentPage + 1) } label: { Image(systemName: "chevron.right") }.disabled(currentPage >= pageCount - 1)
                 }
                 Spacer()
-                Text("左 → 右：旧 → 新").help("位置表示拓扑顺序，不代表实际时间间隔。")
-            }.font(.system(size: 10)).foregroundStyle(.secondary).padding(.horizontal, 16).padding(.vertical, 10)
+                Text("上子下父 · 时间见每行").help("纵向位置是拓扑顺序，不代表实际时间间隔。")
+            }.font(.system(size: 10)).foregroundStyle(.secondary).padding(.horizontal, 16).padding(.vertical, 11)
         }
         .onChange(of: pageCount) { _, _ in page = currentPage }
+        .sheet(item: $detailedCommit) { commit in
+            VStack(alignment: .leading, spacing: 14) {
+                Text(commit.subject.isEmpty ? "无标题提交" : commit.subject).font(.title2.bold())
+                HStack(spacing: 12) {
+                    Text(commit.committedDate.formatted(date: .complete, time: .shortened))
+                    Text(commit.authorName)
+                    Text(shortSHA(commit.sha)).fontDesign(.monospaced)
+                }.font(.caption).foregroundStyle(.secondary)
+                Divider()
+                ScrollView {
+                    Text(commit.body).font(.system(.body, design: .monospaced))
+                        .textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading)
+                }
+                HStack {
+                    Spacer()
+                    Button("关闭") { detailedCommit = nil }.keyboardShortcut(.cancelAction)
+                }
+            }.padding(24).frame(minWidth: 520, minHeight: 340)
+        }
     }
-    private var graphContent: some View {
-        let nodesByID = Dictionary(uniqueKeysWithValues: graph.nodes.map { ($0.id, $0) })
+    private var timeline: some View {
+        let visibleGraph = graph
+        let nodes = visibleGraph.nodes
+        let laneStep: CGFloat = visibleGraph.laneCount > 8 ? 14 : 20
+        let railWidth = max(48, CGFloat(visibleGraph.laneCount) * laneStep + 30)
+        func railX(_ lane: Int) -> CGFloat { 23 + CGFloat(lane) * laneStep }
+        let positions = nodePositions(nodes)
+        let lookup = Dictionary(uniqueKeysWithValues: nodes.map { ($0.id, $0) })
+        let loadedIDs = Set(baseGraph.nodes.map(\.id))
+        let pageIDs = Set(nodes.map(\.id))
+        let height = nodes.reduce(CGFloat(0)) { $0 + rowHeight($1) }
         return ZStack(alignment: .topLeading) {
-            Canvas { context, size in
-                // A quiet dotted grid provides spatial context without competing with the graph.
-                for x in stride(from: CGFloat(15), through: size.width, by: 24) {
-                    for y in stride(from: CGFloat(12), through: size.height, by: 24) {
-                        context.fill(Path(ellipseIn: CGRect(x: x, y: y, width: 1, height: 1)), with: .color(.secondary.opacity(0.12)))
-                    }
-                }
-                for edge in graph.edges {
-                    guard let child = nodesByID[edge.childSHA], let parent = nodesByID[edge.parentSHA] else { continue }
-                    let start = point(parent), end = point(child)
+            Canvas { context, _ in
+                for edge in visibleGraph.edges {
+                    guard let child = lookup[edge.childSHA], let parent = lookup[edge.parentSHA],
+                          let fromY = positions[child.id], let toY = positions[parent.id] else { continue }
+                    let start = CGPoint(x: railX(child.lane), y: fromY)
+                    let end = CGPoint(x: railX(parent.lane), y: toY)
                     var path = Path(); path.move(to: start)
-                    let middleX = (start.x + end.x) / 2
-                    path.addCurve(to: end, control1: CGPoint(x: middleX, y: start.y), control2: CGPoint(x: middleX, y: end.y))
-                    let color = AtlasStyle.lane(child.lane)
-                    context.stroke(path, with: .color(color.opacity(0.72)), style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                    path.addCurve(to: end, control1: CGPoint(x: start.x, y: start.y + (end.y - start.y) * 0.55),
+                                  control2: CGPoint(x: end.x, y: end.y - (end.y - start.y) * 0.45))
+                    context.stroke(path, with: .color(AtlasStyle.lane(child.lane).opacity(0.8)),
+                                   style: StrokeStyle(lineWidth: 2, lineCap: .round))
                     if edge.hiddenCommits > 0 {
-                        let label = Text("+\(edge.hiddenCommits)").font(.system(size: 9, design: .monospaced)).foregroundColor(.secondary)
-                        context.draw(label, at: CGPoint(x: middleX, y: (start.y + end.y) / 2 - 12))
+                        let label = Text("+\(edge.hiddenCommits)").font(.system(size: 9, weight: .medium, design: .monospaced)).foregroundColor(.secondary)
+                        context.draw(label, at: CGPoint(x: (start.x + end.x) / 2, y: (start.y + end.y) / 2))
                     }
                 }
-                for node in graph.nodes {
-                    let p = point(node)
-                    let radius: CGFloat = node.worktrees.isEmpty ? 4 : 7
+                for node in nodes {
+                    guard let y = positions[node.id] else { continue }
+                    let center = CGPoint(x: railX(node.lane), y: y)
+                    let color = AtlasStyle.lane(node.lane)
                     if node.worktrees.contains(where: { $0.path == selectedPath }) {
-                        context.fill(Path(ellipseIn: CGRect(x: p.x - 13, y: p.y - 13, width: 26, height: 26)), with: .color(AtlasStyle.lane(node.lane).opacity(0.18)))
+                        context.fill(Path(ellipseIn: CGRect(x: center.x - 12, y: center.y - 12, width: 24, height: 24)),
+                                     with: .color(color.opacity(0.23)))
                     }
-                    context.fill(Path(ellipseIn: CGRect(x: p.x - radius, y: p.y - radius, width: radius * 2, height: radius * 2)), with: .color(AtlasStyle.lane(node.lane)))
-                    if node.isHistoryBoundary {
-                        var tail = Path(); tail.move(to: CGPoint(x: p.x - 9, y: p.y)); tail.addLine(to: CGPoint(x: p.x - 40, y: p.y))
-                        context.stroke(tail, with: .color(.secondary), style: StrokeStyle(lineWidth: 1.5, dash: [3, 4]))
-                    }
+                    let radius: CGFloat = node.worktrees.isEmpty ? 5 : 8
+                    let dot = Path(ellipseIn: CGRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2))
+                    context.fill(dot, with: .color(color))
+                    context.stroke(dot, with: .color(colorScheme == .dark ? .black : .white), lineWidth: 2)
                 }
-            }
-            ForEach(graph.nodes) { node in
-                let p = point(node)
-                VStack(spacing: 5) {
-                    if node.worktrees.isEmpty {
-                        Text(node.commit.refs.first(where: { $0.name == snapshot.record.defaultBranch })?.name ?? shortSHA(node.id))
-                            .font(.system(size: 10, design: .monospaced)).foregroundStyle(.secondary)
-                    } else {
-                        ForEach(node.worktrees) { worktree in
-                            Button { onSelect(worktree) } label: { WorktreeBadge(worktree: worktree) }
-                                .buttonStyle(.plain)
-                        }
+            }.frame(height: height)
+            VStack(spacing: 0) {
+                ForEach(nodes) { node in
+                    HStack(alignment: .top, spacing: 0) {
+                        Color.clear.frame(width: railWidth)
+                        commitDetails(node, loadedIDs: loadedIDs, pageIDs: pageIDs)
+                            .padding(.trailing, 16).frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    if node.isHistoryBoundary { Text(compact ? "更早历史未载入" : "视图边界").font(.system(size: 9)).foregroundStyle(.secondary) }
+                    .frame(height: rowHeight(node), alignment: .top)
+                    .overlay(alignment: .bottom) { Rectangle().fill(AtlasStyle.divider(colorScheme)).frame(height: 1).padding(.leading, railWidth) }
                 }
-                .frame(width: 160)
-                .fixedSize(horizontal: false, vertical: true)
-                .position(x: p.x, y: p.y + (node.worktrees.isEmpty ? 23 : 41 + CGFloat(max(0, node.worktrees.count - 1)) * 30))
-                .help(node.commit.subject)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: height, alignment: .top)
+    }
+    private func commitDetails(_ node: AtlasGraphNode, loadedIDs: Set<String>, pageIDs: Set<String>) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text(node.commit.subject.isEmpty ? "无标题提交" : node.commit.subject)
+                    .font(.system(size: 13, weight: node.worktrees.isEmpty ? .medium : .semibold))
+                    .lineLimit(2).textSelection(.enabled)
+                Spacer(minLength: 4)
+                Text(shortSHA(node.id)).font(.system(size: 10, design: .monospaced))
+                    .foregroundStyle(.tertiary).textSelection(.enabled)
+            }
+            HStack(spacing: 8) {
+                Text(node.commit.committedDate.formatted(date: .abbreviated, time: .shortened))
+                if !node.commit.authorName.isEmpty { Text("· \(node.commit.authorName)").lineLimit(1) }
+                if node.isHistoryBoundary { Text("· 更早历史未载入").foregroundStyle(.orange) }
+                else if !compact && node.commit.parentSHAs.contains(where: { loadedIDs.contains($0) && !pageIDs.contains($0) }) {
+                    Text("· 下页继续").foregroundStyle(.secondary)
+                }
+            }.font(.system(size: 10)).foregroundStyle(.secondary)
+            if !node.commit.body.isEmpty {
+                Button { detailedCommit = node.commit } label: {
+                    HStack(alignment: .top, spacing: 4) {
+                        Text(node.commit.body).lineLimit(1)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Image(systemName: "arrow.up.right.square")
+                    }
+                }.buttonStyle(.plain).font(.system(size: 11)).foregroundStyle(.secondary)
+                    .help("查看完整提交正文")
+            }
+            ForEach(node.worktrees) { worktree in
+                Button { onSelect(worktree) } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: worktree.isLocked ? "lock.fill" : "arrow.triangle.branch")
+                        Text(worktree.isDetached ? "游离 HEAD" : worktree.title).lineLimit(1)
+                        Text("HEAD").font(.system(size: 9, design: .monospaced))
+                        Spacer(minLength: 2)
+                        Circle().fill(AtlasStyle.status(worktree)).frame(width: 5, height: 5)
+                        Text(worktree.statusSummary).lineLimit(1)
+                    }
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(worktree.path == selectedPath ? AtlasStyle.selectedText(colorScheme) : .primary)
+                    .padding(.horizontal, 9).frame(height: 28)
+                    .background(AtlasStyle.worktreeSurface(colorScheme), in: RoundedRectangle(cornerRadius: 6))
+                    .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(AtlasStyle.status(worktree).opacity(0.35)))
+                }.buttonStyle(.plain).help(worktree.path)
+            }
+        }
+        .padding(.top, 14)
     }
 }

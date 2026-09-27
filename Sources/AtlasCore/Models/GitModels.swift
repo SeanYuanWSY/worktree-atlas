@@ -140,12 +140,15 @@ public struct CommitNode: Equatable, Identifiable, Codable, Sendable {
     public var parentSHAs: [String]
     public var authorName: String
     public var authoredDate: Date
+    public var committedDate: Date
     public var subject: String
+    public var body: String
     public var refs: [GitRef]
     public init(sha: String, parentSHAs: [String], authorName: String = "", authoredDate: Date = .distantPast,
-                subject: String = "", refs: [GitRef] = []) {
+                subject: String = "", body: String = "", committedDate: Date? = nil, refs: [GitRef] = []) {
         self.sha = sha; self.parentSHAs = parentSHAs; self.authorName = authorName
-        self.authoredDate = authoredDate; self.subject = subject; self.refs = refs
+        self.authoredDate = authoredDate; self.committedDate = committedDate ?? authoredDate
+        self.subject = subject; self.body = body; self.refs = refs
     }
 }
 

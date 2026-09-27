@@ -13,7 +13,9 @@ public enum DemoWorkspace {
                 + String(repeating: "0", count: 33)
         }
         func commit(_ n: Int, _ parents: [Int], _ title: String, refs: [GitRef] = []) -> CommitNode {
-            CommitNode(sha: sha(n), parentSHAs: parents.map(sha), authorName: "Demo", authoredDate: Date(timeIntervalSince1970: Double(1000+n)), subject: title, refs: refs)
+            let date = Date(timeIntervalSince1970: 1_779_000_000 + Double(n * 7200 - index * 3600))
+            return CommitNode(sha: sha(n), parentSHAs: parents.map(sha), authorName: "Demo", authoredDate: date,
+                              subject: title, body: n >= 7 ? "Keep the worktree graph readable while preserving the real commit ancestry." : "", refs: refs)
         }
         let path = "/demo/" + name
         let commits = [commit(9, [7], "Refine graph interactions"), commit(8, [6], "Improve diagnostics"),

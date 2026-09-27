@@ -18,6 +18,7 @@ private struct ConfirmationRequest: Identifiable {
 struct DashboardView: View {
     @ObservedObject var model: WorkspaceModel
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.colorScheme) private var colorScheme
     @AppStorage("refreshInterval") private var refreshInterval = 10.0
     @State private var selectedRepository: UUID?
     @State private var selection: WorktreeSelection?
@@ -48,7 +49,7 @@ struct DashboardView: View {
         } detail: {
             HStack(spacing: 0) {
                 GeometryReader { geometry in
-                    content(columnCount: selectedRepository == nil && geometry.size.width > 1050 ? 2 : 1)
+                    content(columnCount: selectedRepository == nil && geometry.size.width > 1180 ? 2 : 1)
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 if let (snapshot, worktree) = inspected {
                     Divider()
@@ -58,6 +59,7 @@ struct DashboardView: View {
                         onToggleLock: { toggleLock(snapshot, worktree) }, onError: { model.message = $0 })
                 }
             }
+            .background(AtlasStyle.background(colorScheme))
         }
         .navigationTitle("Worktree Atlas")
         .toolbar {
@@ -124,7 +126,7 @@ struct DashboardView: View {
         VStack(spacing: 0) {
             List(selection: $selectedRepository) {
                 Button { selectedRepository = nil } label: {
-                    Label("全部仓库", systemImage: "square.grid.2x2").foregroundStyle(selectedRepository == nil ? Color.teal : Color.primary)
+                    Label("全部仓库", systemImage: "square.grid.2x2").foregroundStyle(selectedRepository == nil ? AtlasStyle.accent : Color.primary)
                 }.buttonStyle(.plain).padding(.vertical, 6)
                 Section("仓库") {
                     ForEach(model.repositories) { record in
@@ -137,7 +139,7 @@ struct DashboardView: View {
             }.listStyle(.sidebar)
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 7) {
-                    Circle().fill(model.isDemo ? Color.indigo : .teal).frame(width: 6, height: 6)
+                    Circle().fill(model.isDemo ? Color.indigo : AtlasStyle.accent).frame(width: 6, height: 6)
                     Text(model.isDemo ? "演示数据 · 禁用写操作" : model.paused ? "自动刷新已暂停" : "本地优先 · 自动刷新")
                         .font(.system(size: 10)).foregroundStyle(.secondary)
                 }
@@ -149,7 +151,7 @@ struct DashboardView: View {
                     Text("0.1.0-dev").font(.system(size: 10, design: .monospaced)).foregroundStyle(.tertiary)
                 }.buttonStyle(.borderless)
             }.padding(16)
-        }
+        }.background(AtlasStyle.card(colorScheme))
     }
     private func content(columnCount: Int) -> some View {
         VStack(spacing: 0) {
@@ -162,7 +164,7 @@ struct DashboardView: View {
                         } description: {
                             Text("添加已有仓库。Atlas 自动发现其工作树，并在真实提交图中标出它们的位置。")
                         } actions: {
-                            Button("添加仓库") { model.add(paths: DesktopActions.chooseRepositories()) }.buttonStyle(.borderedProminent).tint(.teal)
+                            Button("添加仓库") { model.add(paths: DesktopActions.chooseRepositories()) }.buttonStyle(.borderedProminent).tint(AtlasStyle.accent)
                             Button("查看交互演示") { model.showDemo() }.buttonStyle(.borderless)
                         }.frame(minHeight: 320)
                     } else if visibleRecords.isEmpty {
@@ -184,7 +186,7 @@ struct DashboardView: View {
                                         if let error = model.failures[record.id] { Label(error, systemImage: "exclamationmark.triangle").font(.caption).foregroundStyle(.orange) }
                                         else { ProgressView("正在读取工作树…").controlSize(.small) }
                                     }.frame(maxWidth: .infinity, minHeight: 170, alignment: .leading).padding(20)
-                                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18))
+                                        .background(AtlasStyle.card(colorScheme), in: RoundedRectangle(cornerRadius: 18))
                                 }
                             }
                         }
@@ -206,10 +208,10 @@ struct DashboardView: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 7) {
                     Text(model.isDemo ? "DEMO WORKSPACE" : "YOUR WORK, IN CONTEXT")
-                        .font(.system(size: 10, weight: .semibold, design: .monospaced)).tracking(2).foregroundStyle(.teal)
+                        .font(.system(size: 10, weight: .semibold, design: .monospaced)).tracking(2).foregroundStyle(AtlasStyle.accent)
                     Text(selectedRepository == nil ? "所有工作树，一眼看清。" : model.repositories.first(where: { $0.id == selectedRepository })?.displayName ?? "仓库")
                         .font(.system(size: 28, weight: .semibold))
-                    Text("看见分叉、当前位置和待处理状态。不接管你的开发工具。")
+                    Text("纵向阅读真实提交、分叉和每棵工作树的 HEAD。")
                         .font(.system(size: 12)).foregroundStyle(.secondary)
                 }
                 Spacer(minLength: 10)

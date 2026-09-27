@@ -139,7 +139,7 @@ public struct RepositoryScanner: Sendable {
         var tips = Set(worktrees.filter { !$0.isBare }.map(\.headSHA).filter { !$0.isEmpty && !$0.allSatisfy { $0 == "0" } })
         if let defaultSHA { tips.insert(defaultSHA) }
         var commits: [CommitNode] = []
-        let logPrefix = ["log", "--topo-order", "--no-show-signature", "--no-decorate", "-z", "--format=%H%x00%P%x00%an%x00%at%x00%s"]
+        let logPrefix = ["log", "--topo-order", "--no-show-signature", "--no-decorate", "-z", "--format=%H%x00%P%x00%an%x00%at%x00%ct%x00%s%x00%b"]
         if !tips.isEmpty {
             do {
                 commits = try GitParser.commits(await runner.run(logPrefix + ["--max-count=\(historyLimit)"] + tips.sorted() + ["--"], at: accessPath))

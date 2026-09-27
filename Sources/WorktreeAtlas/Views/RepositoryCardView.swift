@@ -2,6 +2,7 @@ import SwiftUI
 import AtlasCore
 
 struct RepositoryCardView: View {
+    @Environment(\.colorScheme) private var colorScheme
     let snapshot: RepositorySnapshot
     let error: String?
     let focused: Bool
@@ -32,7 +33,7 @@ struct RepositoryCardView: View {
                 } label: { Image(systemName: "ellipsis") }.menuStyle(.borderlessButton).frame(width: 24)
             }.padding(18)
             HStack(spacing: 6) {
-                MetadataPill(text: "\(snapshot.worktrees.filter { !$0.isBare }.count) worktrees", symbol: "arrow.triangle.branch", color: .teal)
+                MetadataPill(text: "\(snapshot.worktrees.filter { !$0.isBare }.count) worktrees", symbol: "arrow.triangle.branch", color: AtlasStyle.accent)
                 let changed = snapshot.worktrees.filter { $0.statusKnown && $0.dirtyCount > 0 }.count
                 if changed > 0 { MetadataPill(text: "\(changed) 有修改", color: .orange) }
                 Spacer()
@@ -51,7 +52,7 @@ struct RepositoryCardView: View {
                 }.font(.caption).foregroundStyle(.secondary).padding(.horizontal, 16).padding(.bottom, 12)
             }
         }
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18))
-        .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(.primary.opacity(0.07), lineWidth: 1))
+        .background(AtlasStyle.card(colorScheme), in: RoundedRectangle(cornerRadius: 18))
+        .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(AtlasStyle.divider(colorScheme), lineWidth: 1))
     }
 }

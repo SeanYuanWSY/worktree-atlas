@@ -4,6 +4,8 @@
 
 `AtlasCore` contains Foundation models, a bounded Git process runner, NUL parsers, repository scanner, compact graph projector, safe worktree operations, JSON registry and demo fixtures. It builds on Linux and macOS.
 
+The scanner reads both author and committer timestamps plus the full commit body. The native card renders retained commits from top to bottom in topological order, with actual parent edges in the left rail and commit details on the right. Row position does not encode elapsed time. Compact mode keeps all required anchors; focused full mode pages the loaded history in groups of 30.
+
 `WorktreeAtlas` is the SwiftUI/AppKit executable, included in Package.swift only on macOS. `WorkspaceModel` owns the shared registry and snapshots. Window-local dashboard selection is in `DashboardView`; `GraphCanvasView` and the inspector are separate views. `DesktopActions` is the small AppKit boundary for folder panels, clipboard and opening other apps.
 
 `atlas-inspect` is a read-only executable built against the same core. It is for diagnostics/tests, not a replacement for the GUI.

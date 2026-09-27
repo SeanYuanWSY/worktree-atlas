@@ -48,20 +48,23 @@ public enum GitParser {
         }
         return status
     }
-    /// `git log -z --format=%H%x00%P%x00%an%x00%at%x00%s`: exactly five fields per record.
+    /// NUL-delimited SHA, parents, author, author time, commit time, subject, and body.
     public static func commits(_ output: String) throws -> [CommitNode] {
         if output.isEmpty { return [] }
         var parts = output.components(separatedBy: "\0")
         if parts.last == "" { parts.removeLast() }
-        guard parts.count.isMultiple(of: 5) else {
+        guard parts.count.isMultiple(of: 7) else {
             throw GitCommandError(["log"], code: 65, message: "提交数据格式不完整。")
         }
         var commits: [CommitNode] = []
-        for i in stride(from: 0, to: parts.count, by: 5) {
+        for i in stride(from: 0, to: parts.count, by: 7) {
             let parentSHAs = parts[i + 1].split(separator: " ").map { String($0) }
             let authoredDate = Date(timeIntervalSince1970: Double(parts[i + 3]) ?? 0)
+            let committedDate = Date(timeIntervalSince1970: Double(parts[i + 4]) ?? 0)
             commits.append(CommitNode(sha: parts[i], parentSHAs: parentSHAs,
-                                      authorName: parts[i + 2], authoredDate: authoredDate, subject: parts[i + 4]))
+                                      authorName: parts[i + 2], authoredDate: authoredDate,
+                                      subject: parts[i + 5], body: parts[i + 6].trimmingCharacters(in: .whitespacesAndNewlines),
+                                      committedDate: committedDate))
         }
         return commits
     }

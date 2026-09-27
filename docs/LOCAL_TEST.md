@@ -1,18 +1,18 @@
 # macOS acceptance checklist
 
-Checked boxes reflect the 2026-09-24 Apple Silicon run documented in [VALIDATION.md](VALIDATION.md). The source ZIP has no Git commit metadata. Unchecked boxes remain unverified.
+Checked boxes reflect the 2026-09-24 and 2026-09-27 Apple Silicon runs documented in [VALIDATION.md](VALIDATION.md). Unchecked boxes remain unverified.
 
 ## Build and launch
 
-- [x] `./script/check.sh` runs and passes all 48 Swift Testing tests on this Mac; it rejects a zero-test run.
+- [x] `./script/check.sh` runs and passes all 49 Swift Testing tests on this Mac; it rejects a zero-test run.
 - [x] `./script/build_and_run.sh --demo` builds the SwiftUI target, creates/signs a real `.app`, and launches a foreground native window.
 - [x] The procedural icon builds using AppKit/iconutil.
 - [ ] Confirm the icon appears correctly in the Dock and app switcher.
 - [x] Restarting the native app restored a disposable real repository registration; demo records did not replace the saved registry.
 - [ ] Light, dark, 1380×880 and 980×660 layouts have no clipped or unreadable controls. Light/dark and the macOS half-screen layout were inspected; exact pixel sizes remain untested.
 - [x] Opening an inspector collapses the dashboard to an appropriate column count.
-- [x] Zooming a real graph creates scrollable space; Fit restores the full graph and follows a wider window.
-- [ ] Graph labels, pan/zoom/Fit and scroll areas remain usable with long branch names.
+- [x] The redesigned vertical graph scrolls without horizontal panning; the native demo shows commit title, time, author, body preview, ancestry lanes and HEAD badges.
+- [ ] Graph labels and scroll areas remain usable with very long branch names and unusually large commit bodies.
 
 ## Disposable real repositories
 

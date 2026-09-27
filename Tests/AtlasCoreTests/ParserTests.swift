@@ -36,9 +36,11 @@ import Testing
     }
     @Test
     func testCommitFieldsAllowTabsAndUnicode() throws {
-        let commits = try GitParser.commits("abc\0parent\0王\0" + "42\0subject\twith spaces\0")
+        let commits = try GitParser.commits("abc\0parent\0王\0" + "42\0" + "50\0subject\twith spaces\0正文\n第二行\0")
         #expect((commits[0].subject) == ("subject\twith spaces"))
         #expect((commits[0].parentSHAs) == (["parent"]))
+        #expect((commits[0].body) == "正文\n第二行")
+        #expect((commits[0].committedDate.timeIntervalSince1970) == 50)
     }
     @Test
     func testMalformedCommitRejected() { #expect(throws: Error.self) { try GitParser.commits("a\0b\0") } }
