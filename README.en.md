@@ -2,7 +2,7 @@
 
 **Your worktrees, back on the graph.** A focused native macOS workspace that displays multiple repositories and attaches each worktree to its real Git HEAD.
 
-This **0.1.0-dev source release** has been built, ad-hoc signed, and opened as a native app on an Apple Silicon Mac. The dashboard now uses a dark near-black palette and a vertical, top-to-bottom commit graph with inline commit time, subject, body preview, and worktree HEAD markers. Disposable repositories verified the native create, lock, unlock, remove, and prune flows. All 49 current Swift Testing tests passed locally; the earlier 48-test source version passed the [GitHub macOS build](https://github.com/SeanYuanWSY/worktree-atlas/actions/runs/35975786842). The source is in the [public GitHub repository](https://github.com/SeanYuanWSY/worktree-atlas). See [validation](docs/VALIDATION.md).
+This **0.1.0-dev source release** has been built, ad-hoc signed, and opened as a native app on an Apple Silicon Mac. The dashboard now uses a dark near-black palette and a vertical, top-to-bottom commit graph with inline commit time, subject, body preview, and worktree HEAD markers. Disposable repositories verified the native create, lock, unlock, remove, and prune flows. All 49 current Swift Testing tests passed locally and in the [GitHub macOS build](https://github.com/SeanYuanWSY/worktree-atlas/actions/runs/36327521805). The source is in the [public GitHub repository](https://github.com/SeanYuanWSY/worktree-atlas). See [validation](docs/VALIDATION.md).
 
 ## Scope
 

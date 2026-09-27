@@ -9,7 +9,7 @@
 - 根据用户反馈，将原生仓库卡片中的左右图谱改为自上而下的真实提交图。提交行显示标题、实际提交时间、作者、短 SHA 和正文摘要；可打开完整正文，工作树仍固定在其真实 HEAD 节点。保留多仓库图卡、单仓库聚焦、完整已载入历史分页和状态详情。
 - 深色模式改用近黑背景、深色卡片与低亮度青色分隔。演示模式原生窗口已目视检查：三张仓库卡片可见，点击 `feature/graph` 打开正确工作树详情；完整正文弹窗、单仓库聚焦、完整已载入历史切换正常。浅色模式也已打开目视检查，并恢复深色设置。超过 30 条历史的分页边界提示尚未在原生窗口目视检查。
 - 旧 `docs/preview.html` 与预览图片保持历史材料身份，已在 README 标明不代表当前原生界面。
-- `./script/check.sh` 在本机重新通过：**49 项 Swift Testing 测试、3 个 suite**，包含对真实临时 Git 仓库的提交正文与提交时间读取；SwiftUI 原生构建、ad-hoc 签名、plist 及脚本检查通过。`./script/build_and_run.sh --demo` 已打开新版应用。GitHub Actions 运行 35975786842 属于旧版本，不验证本次界面修改。
+- `./script/check.sh` 在本机重新通过：**49 项 Swift Testing 测试、3 个 suite**，包含对真实临时 Git 仓库的提交正文与提交时间读取；SwiftUI 原生构建、ad-hoc 签名、plist 及脚本检查通过。`./script/build_and_run.sh --demo` 已打开新版应用。改版源码提交 `05ca585` 的 [GitHub macOS Actions 运行 36327521805](https://github.com/SeanYuanWSY/worktree-atlas/actions/runs/36327521805) 已结束且结论为 success；远端日志实际显示 **49 项测试通过**，原生应用构建、开发版归档与上传均成功。
 
 ## 本次 macOS 实机验证
 

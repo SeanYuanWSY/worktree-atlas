@@ -4,7 +4,7 @@
 
 [公开仓库](https://github.com/SeanYuanWSY/worktree-atlas) · [English](README.en.md) · [架构](docs/ARCHITECTURE.md) · [本机验收](docs/LOCAL_TEST.md) · [验证记录](docs/VALIDATION.md) · [开发交接](AGENTS.md)
 
-> **状态：0.1.0-dev，本机与 GitHub 构建验证通过，源码已公开。** 已在 Apple Silicon Mac 上编译、签名并打开原生应用，用临时 Git 仓库验证双仓库图谱、新建、锁定、解锁、移除和失效记录清理。本机及[GitHub Mac 构建](https://github.com/SeanYuanWSY/worktree-atlas/actions/runs/35975786842)均实际运行 48 项测试并全部通过；详细范围见[验证记录](docs/VALIDATION.md)。GitHub 仓库 `SeanYuanWSY/worktree-atlas` 已创建为公开仓库。
+> **状态：0.1.0-dev，本机与 GitHub 构建验证通过，源码已公开。** 已在 Apple Silicon Mac 上编译、签名并打开原生应用，用临时 Git 仓库验证双仓库图谱、新建、锁定、解锁、移除和失效记录清理。纵向界面改版的本机及[GitHub Mac 构建](https://github.com/SeanYuanWSY/worktree-atlas/actions/runs/36327521805)均实际运行 49 项测试并全部通过；详细范围见[验证记录](docs/VALIDATION.md)。GitHub 仓库 `SeanYuanWSY/worktree-atlas` 为公开仓库。
 
 ## 界面方向
 
