@@ -13,10 +13,13 @@ struct GraphCanvasView: View {
     @State private var detailedCommit: CommitNode?
     @State private var hoveredCommit: String?
     private let allGraph: WorktreeGraph
-    private let rowHeight: CGFloat = 22
+    @AppStorage("graphComfortable") private var comfortable = false
+    @AppStorage("graphAuthorNames") private var authorNames = true
+    @AppStorage("graphAbsoluteDates") private var absoluteDates = false
+    private var rowHeight: CGFloat { comfortable ? 30 : 24 }
     private let refsWidth: CGFloat = 236
-    private let authorWidth: CGFloat = 32
-    private let dateWidth: CGFloat = 64
+    private var authorWidth: CGFloat { authorNames ? 132 : 32 }
+    private var dateWidth: CGFloat { absoluteDates ? 94 : 64 }
     private let shaWidth: CGFloat = 62
     private func tagWidth(_ title: String) -> CGFloat {
         let textWidth = (title as NSString).size(withAttributes: [.font: NSFont.systemFont(ofSize: 10, weight: .medium)]).width
@@ -108,14 +111,17 @@ struct GraphCanvasView: View {
                     ScrollView(.horizontal) {
                         VStack(spacing: 0) {
                             tableHeader(graph: visibleGraph)
+                                .padding(.trailing, 16)
                             ScrollView(.vertical) {
                                 tableRows(graph: visibleGraph)
+                                    .frame(width: max(minimumWidth, geometry.size.width) - 16)
                             }
                             .scrollIndicators(.visible)
+                            .id(currentPage)
                         }
                         .frame(width: max(minimumWidth, geometry.size.width), height: geometry.size.height)
                     }
-                    .scrollIndicators(.hidden)
+                    .scrollIndicators(.visible)
                 }
                 .frame(height: tableHeight)
             }
@@ -161,7 +167,7 @@ struct GraphCanvasView: View {
             Text("提交图").padding(.leading, 10).frame(width: graphWidth, alignment: .leading)
             Text("分支 / 工作树").frame(width: refsWidth, alignment: .leading)
             Text("信息").frame(maxWidth: .infinity, alignment: .leading)
-            Image(systemName: "person.crop.circle").frame(width: authorWidth, alignment: .leading)
+            Text("作者").frame(width: authorWidth, alignment: .leading)
             Text("日期").frame(width: dateWidth, alignment: .leading)
             Text("SHA").frame(width: shaWidth, alignment: .leading)
         }
@@ -309,16 +315,12 @@ struct GraphCanvasView: View {
                     .font(.system(size: 11))
                     .foregroundStyle(Color.primary.opacity(0.78))
                     .lineLimit(1).frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.trailing, 12).contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .help(node.commit.body.isEmpty ? node.commit.subject : "\(node.commit.subject)\n\n\(node.commit.body)")
-            Text(String(node.commit.authorName.prefix(1)).uppercased())
-                .font(.system(size: 7, weight: .medium))
-                .foregroundStyle(AtlasStyle.lane(node.lane))
-                .frame(width: 12, height: 12)
-                .background(AtlasStyle.lane(node.lane).opacity(0.13), in: Circle())
-                .frame(width: authorWidth, alignment: .leading).help(node.commit.authorName)
-            Text(relativeTime(node.commit.committedDate))
+            authorCell(node.commit.authorName)
+            Text(absoluteDates ? node.commit.committedDate.formatted(.dateTime.year().month(.twoDigits).day(.twoDigits)) : relativeTime(node.commit.committedDate))
                 .frame(width: dateWidth, alignment: .leading).foregroundStyle(.secondary)
                 .help(node.commit.committedDate.formatted(date: .complete, time: .standard))
             Text(shortSHA(node.id)).fontDesign(.monospaced).foregroundStyle(.tertiary)
@@ -330,10 +332,49 @@ struct GraphCanvasView: View {
                     ? AtlasStyle.selection(colorScheme)
                     : hoveredCommit == node.id ? Color.primary.opacity(0.035) : .clear)
         .onHover { hovering in hoveredCommit = hovering ? node.id : nil }
+        .contextMenu {
+            Button("查看提交详情") { detailedCommit = node.commit }
+            Button("复制完整 SHA") { copyText(node.id) }
+            Button("复制提交标题") { copyText(node.commit.subject) }
+        }
         .overlay(alignment: .bottom) {
             if !node.worktrees.isEmpty { Rectangle().fill(AtlasStyle.divider(colorScheme)).frame(height: 0.5) }
         }
     }
+    private func copyText(_ text: String) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+    }
+
+    private func authorCell(_ name: String) -> some View {
+        let normalized = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let identity = normalized.lowercased().utf8.reduce(UInt64(5381)) { ($0 &* 33) &+ UInt64($1) }
+        let color = AtlasStyle.lane(Int(identity % 8))
+        let words = normalized.split(whereSeparator: { $0.isWhitespace })
+        let initials = words.count > 1
+            ? String(words.prefix(2).compactMap(\.first))
+            : String(normalized.prefix(1))
+        return HStack(spacing: 6) {
+            Text(initials.isEmpty ? "?" : initials.uppercased())
+                .font(.system(size: 8, weight: .semibold))
+                .foregroundStyle(color)
+                .frame(width: 18, height: 18)
+                .background(color.opacity(0.16), in: Circle())
+                .overlay(Circle().strokeBorder(color.opacity(0.3), lineWidth: 0.5))
+                .accessibilityHidden(true)
+            if authorNames {
+                Text(normalized.isEmpty ? "未知作者" : normalized)
+                    .font(.system(size: 11)).foregroundStyle(.secondary)
+                    .lineLimit(1).truncationMode(.tail)
+            }
+        }
+        .padding(.trailing, 10)
+        .frame(width: authorWidth, alignment: .leading)
+        .help(normalized.isEmpty ? "未知作者" : normalized)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("作者：\(normalized.isEmpty ? "未知作者" : normalized)")
+    }
+
     private func refCell(_ node: AtlasGraphNode) -> some View {
         ScrollView(.horizontal) {
             HStack(spacing: 5) {
@@ -353,7 +394,7 @@ struct GraphCanvasView: View {
             }
             .frame(height: rowHeight, alignment: .leading)
         }
-        .scrollIndicators(.hidden)
+        .scrollIndicators(.never)
         .frame(width: refsWidth, height: rowHeight, alignment: .leading)
     }
     private func refLabel(_ title: String, color: Color, symbol: String, filled: Bool = false) -> some View {
