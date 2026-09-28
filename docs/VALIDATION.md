@@ -111,3 +111,9 @@ python script/check_preview.py
 - 【已核实】原生窗口检查多仓库作者显示、行距与日期即时切换；修复表头与滚动内容的宽度差。姓名较长时截断并保留完整提示。
 - 【已核实】本次本地检查通过 49 项测试及原生构建。
 - 【未验证】本次未重测浅色、精确最小窗口和 VoiceOver；没有宣称与 GitLens 像素级一致。
+
+## 2026-09-28 README 与原生截图
+
+- 【已核实】重新构建并启动 `./script/build_and_run.sh --demo`。`docs/native-overview-dark.png` 来自只读演示模式的原生深色多仓库窗口；`docs/native-worktree-inspector-light.png` 来自本次构建应用的独立演示副本，在浅色模式聚焦 Atlas 并打开 `feature/graph` 详情。两图均只含虚构仓库与 `/demo` 路径，不是旧 HTML 预览。
+- 【已核实】中英文 README 收敛为产品介绍、原生截图、功能、源码运行、安全范围与来源许可；开发验证和历史记录继续保留在本文件，不在 README 首页铺陈。
+- 【已核实】改动后 `./script/check.sh` 退出码 0，49 项 Swift Testing 测试、原生构建、签名与 plist 检查通过；README 本地图片与文档链接检查通过。GitHub CI 以推送后的实际运行结果另行确认。

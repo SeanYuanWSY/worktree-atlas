@@ -17,7 +17,7 @@ Worktree Atlas is a derivative project, not an official GitScope release or an e
 | `Sources/GitScopeCore/Graph/GraphLayoutEngine.swift` | `Sources/AtlasCore/Graph/GraphLayoutEngine.swift` | Adapted the lane-assignment algorithm and helper methods; removed upstream row and badge UI types. |
 | `Sources/GitScopeCore/Git/RepositoryScanner.swift` | `Sources/AtlasCore/Git/RepositoryScanner.swift` | Followed the scanner architecture; rewrote process integration, NUL-delimited parsing, identity handling and bounded history. |
 
-The multi-repository state coordinator, compact graph projection, defensive runner, operation safeguards, new SwiftUI interface, demonstration data, tests, scripts and documentation were implemented for Atlas. This deliverable does not pretend to include the entire upstream Git history. It is a new repository-ready derivative, not a GitHub fork that has already been created.
+The multi-repository state coordinator, compact graph projection, defensive runner, operation safeguards, new SwiftUI interface, demonstration data, tests, scripts and documentation were implemented for Atlas. This repository does not include the entire upstream Git history. It is an independent derivative repository, not a GitHub fork of GitScope.
 
 ## Build-time actions
 
