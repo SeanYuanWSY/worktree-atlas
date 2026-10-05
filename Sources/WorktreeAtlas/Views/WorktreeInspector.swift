@@ -2,6 +2,7 @@ import SwiftUI
 import AtlasCore
 
 struct WorktreeInspector: View {
+    @Environment(\.colorScheme) private var colorScheme
     let worktree: GitWorktree
     let repository: RepositoryRecord
     let canMutate: Bool
@@ -15,11 +16,13 @@ struct WorktreeInspector: View {
                 HStack {
                     Text("WORKTREE").font(.system(size: 10, weight: .semibold, design: .monospaced)).tracking(0.6).foregroundStyle(.secondary)
                     Spacer()
-                    Button(action: onClose) { Image(systemName: "xmark") }.buttonStyle(.borderless).help("关闭详情")
+                    Button(action: onClose) { Image(systemName: "xmark") }.buttonStyle(AtlasToolbarButtonStyle()).help("关闭详情")
+                        .keyboardShortcut(.cancelAction)
                 }
                 VStack(alignment: .leading, spacing: 9) {
-                    Image(systemName: "arrow.triangle.branch").font(.system(size: 16)).foregroundStyle(.teal)
-                    Text(worktree.title).font(.system(size: 13, weight: .medium)).textSelection(.enabled)
+                    Image(systemName: "arrow.triangle.branch").font(.system(size: 20)).foregroundStyle(AtlasStyle.accent)
+                        .frame(width: 38, height: 38).background(AtlasStyle.accent.opacity(0.08), in: RoundedRectangle(cornerRadius: 9))
+                    Text(worktree.title).font(.system(size: 14, weight: .semibold)).textSelection(.enabled)
                     HStack(spacing: 5) {
                         MetadataPill(text: worktree.statusSummary, color: AtlasStyle.status(worktree))
                         if worktree.isMain { MetadataPill(text: "主工作树") }
@@ -62,8 +65,8 @@ struct WorktreeInspector: View {
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 if !canMutate { Text("演示模式、操作中或数据过期时，写入操作不可用。").font(.caption).foregroundStyle(.secondary) }
-            }.padding(12)
-        }.font(.system(size: 11)).frame(width: 250)
+            }.padding(16)
+        }.font(.system(size: 11)).frame(width: 272).background(AtlasStyle.chrome(colorScheme))
     }
     private var hasHEAD: Bool {
         !worktree.headSHA.isEmpty && !worktree.headSHA.allSatisfy { $0 == "0" }

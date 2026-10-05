@@ -10,14 +10,14 @@ A beautiful **native macOS, worktree-only, multi-repository graph dashboard**. D
 
 ## Commands
 
-- `./script/check.sh`: compile, run at least 48 Swift Testing core/unit/integration tests, check Swift and shell syntax and diff whitespace; also build the native app on macOS. It supplies framework paths for Command Line Tools to avoid a zero-test false pass.
+- `./script/check.sh`: compile, run the Swift Testing core/unit/integration tests (currently 54), check Swift and shell syntax and diff whitespace; also build the native app on macOS. It supplies framework paths for Command Line Tools to avoid a zero-test false pass.
 - `./script/build_and_run.sh --demo`: canonical native app demo run.
 - `./script/build_and_run.sh --verify`: launch and process check, not UI proof.
 - `./script/create_fixtures.sh`: new disposable fixture without replacing any user directory.
 
 ## Current Mac handoff
 
-The ZIP was extracted into this project directory. The 2026-09-24 and 2026-09-27 Apple Silicon builds, 49 passing current Swift Testing tests, and native UI checks are recorded in `docs/VALIDATION.md`; continue from its unchecked items rather than repeating the Linux-only handoff. This Mac has Swift 6.3.1 Command Line Tools but no full Xcode. The source ZIP had no `.git`; the public repository is now `https://github.com/SeanYuanWSY/worktree-atlas` on `main`. The initial publish script has already been used; subsequent changes use ordinary commits. Use disposable fixture repos for write-operation testing.
+The ZIP was extracted into this project directory. The current 2026-10-05 side-by-side native UI, 54 passing Swift Testing tests, and earlier Apple Silicon checks are recorded in `docs/VALIDATION.md`; continue from its unchecked items rather than repeating the Linux-only handoff. This Mac has Swift 6.3.1 Command Line Tools but no full Xcode. The source ZIP had no `.git`; the public repository is now `https://github.com/SeanYuanWSY/worktree-atlas` on `main`. The initial publish script has already been used; subsequent changes use ordinary commits. Use disposable fixture repos for write-operation testing.
 
 ## Engineering boundaries
 

@@ -1,16 +1,18 @@
 # macOS acceptance checklist
 
-Checked boxes reflect the 2026-09-24 and 2026-09-27 Apple Silicon runs documented in [VALIDATION.md](VALIDATION.md). Unchecked boxes remain unverified.
+Checked boxes reflect the Apple Silicon runs through 2026-10-05 documented in [VALIDATION.md](VALIDATION.md). Unchecked boxes remain unverified; historical write-operation checks were not repeated on user projects for the UI redesign.
 
 ## Build and launch
 
-- [x] `./script/check.sh` runs and passes all 49 Swift Testing tests on this Mac; it rejects a zero-test run.
+- [x] `./script/check.sh` runs and passes all 54 Swift Testing tests on this Mac; it rejects a zero-test run.
 - [x] `./script/build_and_run.sh --demo` builds the SwiftUI target, creates/signs a real `.app`, and launches a foreground native window.
 - [x] The procedural icon builds using AppKit/iconutil.
 - [ ] Confirm the icon appears correctly in the Dock and app switcher.
 - [x] Restarting the native app restored a disposable real repository registration; demo records did not replace the saved registry.
-- [ ] Light, dark, 1380×880 and 980×660 layouts have no clipped or unreadable controls. Light/dark and the macOS half-screen layout were inspected; exact pixel sizes remain untested.
-- [x] Opening an inspector collapses the dashboard to an appropriate column count.
+- [ ] Light, dark, 1380×880 and 980×660 layouts have no clipped or unreadable controls. Current light/dark layouts and a roughly 981×693pt native window were inspected; the two exact requested sizes remain untested.
+- [x] Opening an inspector adapts the side-by-side panel count; focused narrow tables retain columns with horizontal scrolling.
+- [x] Repositories stay side by side, with a horizontal board and independent vertical commit scrolling. Overview arrows show the visible range and stop at the final group.
+- [x] Native demo: ⌘F focuses search, worktree-path search finds its repository, Escape clears search/closes the inspector, and a commit subject opens its full message.
 - [x] The dense dark native demo shows real ancestry lanes, worktree HEAD labels, a dirty-worktree row, subject, author, relative time and SHA columns. Clicking a subject opens its full message; clicking a worktree opens its inspector. Narrow windows may scroll horizontally to retain all columns.
 - [ ] Graph labels and scroll areas remain usable with very long branch names and unusually large commit bodies.
 - [x] 在 48 条提交的原生演示图中切换第二页，8 条剩余历史及从上一页延续的虚线均可见；单仓库聚焦可展示同一已载入历史。

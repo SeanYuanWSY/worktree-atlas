@@ -13,7 +13,7 @@ struct WorktreeAtlasApp: App {
                 .frame(minWidth: 980, minHeight: 660)
                 .preferredColorScheme(colorScheme)
         }
-        .defaultSize(width: 1380, height: 880)
+        .defaultSize(width: 1680, height: 900)
         .windowStyle(.titleBar)
         .commands {
             CommandGroup(replacing: .newItem) {

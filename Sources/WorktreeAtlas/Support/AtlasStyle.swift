@@ -2,7 +2,8 @@ import SwiftUI
 import AtlasCore
 
 enum AtlasStyle {
-    static let accent = Color(red: 0.15, green: 0.78, blue: 0.84)
+    static let accent = Color(red: 0.2, green: 0.85, blue: 0.94)
+    static let violet = Color(red: 0.56, green: 0.47, blue: 0.98)
     static let laneColors: [Color] = [
         accent, Color(red: 0.55, green: 0.64, blue: 1),
         Color(red: 0.73, green: 0.57, blue: 0.91),
@@ -12,31 +13,48 @@ enum AtlasStyle {
         Color(red: 0.49, green: 0.87, blue: 0.6)
     ]
     static func background(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color(white: 0.094) : Color(white: 0.96)
+        scheme == .dark ? Color(red: 0.026, green: 0.035, blue: 0.052) : Color(red: 0.94, green: 0.955, blue: 0.975)
     }
     static func card(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color(white: 0.105) : Color(white: 0.985)
+        scheme == .dark ? Color(red: 0.047, green: 0.059, blue: 0.083) : Color(white: 0.995)
     }
     static func chrome(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color(white: 0.078) : Color(white: 0.93)
+        scheme == .dark ? Color(red: 0.037, green: 0.047, blue: 0.068) : Color(red: 0.955, green: 0.968, blue: 0.984)
     }
     static func selection(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color(red: 0.16, green: 0.19, blue: 0.21) : Color(red: 0.84, green: 0.92, blue: 0.96)
+        scheme == .dark ? Color(red: 0.054, green: 0.16, blue: 0.2) : Color(red: 0.85, green: 0.94, blue: 0.98)
     }
     static func worktreeSurface(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color(white: 0.13) : Color(nsColor: .textBackgroundColor)
+        scheme == .dark ? Color(red: 0.071, green: 0.088, blue: 0.118) : Color(nsColor: .textBackgroundColor)
     }
     static func selectedText(_ scheme: ColorScheme) -> Color {
         scheme == .dark ? accent : Color(red: 0, green: 0.43, blue: 0.49)
     }
     static func divider(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color.white.opacity(0.075) : .primary.opacity(0.1)
+        scheme == .dark ? Color(red: 0.48, green: 0.6, blue: 0.76).opacity(0.16) : .primary.opacity(0.08)
+    }
+    static func panelBorder(_ scheme: ColorScheme) -> Color {
+        scheme == .dark ? Color(red: 0.4, green: 0.57, blue: 0.76).opacity(0.24) : Color(red: 0.74, green: 0.79, blue: 0.87)
     }
     static func lane(_ value: Int) -> Color { laneColors[abs(value) % laneColors.count] }
     static func status(_ worktree: GitWorktree) -> Color {
         if worktree.isPrunable || !worktree.statusKnown { return .orange }
         if worktree.dirtyCount > 0 { return .orange }
         return .teal
+    }
+}
+struct AtlasToolbarButtonStyle: ButtonStyle {
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.isEnabled) private var isEnabled
+    @State private var hovered = false
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 12, weight: .medium)).frame(minWidth: 28, minHeight: 28)
+            .foregroundStyle(isEnabled ? Color.primary.opacity(0.8) : Color.secondary.opacity(0.4))
+            .background(hovered || configuration.isPressed ? AtlasStyle.worktreeSurface(colorScheme) : .clear,
+                        in: RoundedRectangle(cornerRadius: 7))
+            .overlay(RoundedRectangle(cornerRadius: 7).strokeBorder(hovered ? AtlasStyle.panelBorder(colorScheme) : .clear))
+            .onHover { hovered = $0 }
     }
 }
 struct MetadataPill: View {

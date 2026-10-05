@@ -4,18 +4,18 @@
 
 [简体中文](README.md)
 
-![Multi-repository worktree commit graph in dark mode](docs/native-overview-dark.png)
+![Side-by-side repository graphs in dark mode](docs/native-board-dark.png)
 
 *Native app screenshot · read-only demo data*
 
 ## Features
 
-- **Multiple repositories:** Browse them together or focus on one, with search and an attention filter.
+- **Side-by-side repositories:** Browse repositories horizontally and their commits vertically, or focus on one. Search and an attention filter help narrow the workspace.
 - **Real commit graph:** Follow Git branches and merges vertically, with worktrees on their actual HEADs and aligned subjects, authors, dates, and SHAs.
 - **Worktree details:** Inspect the branch, path, local changes, lock state, and ahead/behind counts from locally cached refs.
 - **Local actions:** Create, lock, unlock, and safely remove worktrees; preview stale-record cleanup first.
 
-![Focused repository graph and worktree inspector in light mode](docs/native-worktree-inspector-light.png)
+![Focused repository graph and worktree inspector in light mode](docs/native-focused-light.png)
 
 *Focused repository and worktree inspector · read-only demo data*
 
@@ -30,6 +30,8 @@ cd worktree-atlas
 ```
 
 Demo mode uses only synthetic in-memory repositories. To use your own repositories, run `./script/build_and_run.sh`, then use the **+** button to select a local Git repository.
+
+Use the overview arrows to browse repositories and a repository's focus button for wider columns. Click a worktree for details or a commit subject for its full message. **⌘F** searches; **Esc** clears the search or closes the inspector. Theme and display settings are on the left rail.
 
 For development checks, run `./script/check.sh`.
 

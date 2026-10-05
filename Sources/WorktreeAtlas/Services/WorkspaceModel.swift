@@ -6,6 +6,7 @@ import AtlasCore
 final class WorkspaceModel: ObservableObject {
     @Published var repositories: [RepositoryRecord] = []
     @Published var snapshots: [UUID: RepositorySnapshot] = [:]
+    @Published private(set) var presentations: [UUID: RepositoryGraphPresentation] = [:]
     @Published var failures: [UUID: String] = [:]
     @Published var refreshing = false
     @Published var busy = false
@@ -24,6 +25,7 @@ final class WorkspaceModel: ObservableObject {
             let items = DemoWorkspace.snapshots
             repositories = items.map(\.record)
             snapshots = Dictionary(uniqueKeysWithValues: items.map { ($0.record.id, $0) })
+            presentations = Dictionary(uniqueKeysWithValues: items.map { ($0.record.id, RepositoryGraphPresentation(snapshot: $0)) })
             return
         }
         do { repositories = try store.load() }
@@ -42,15 +44,16 @@ final class WorkspaceModel: ObservableObject {
         let items = DemoWorkspace.snapshots
         repositories = items.map(\.record)
         snapshots = Dictionary(uniqueKeysWithValues: items.map { ($0.record.id, $0) })
+        presentations = Dictionary(uniqueKeysWithValues: items.map { ($0.record.id, RepositoryGraphPresentation(snapshot: $0)) })
     }
     func leaveDemo() {
         guard !busy else { return }
-        generation += 1; isDemo = false; snapshots = [:]; failures = [:]
+        generation += 1; isDemo = false; snapshots = [:]; presentations = [:]; failures = [:]
         do { repositories = try store.load() } catch { repositories = []; message = error.localizedDescription }
         refreshAll()
     }
     func add(paths: [String]) {
-        guard !busy else { return }
+        guard !busy, !paths.isEmpty else { return }
         if isDemo { leaveDemo() }
         refreshTask?.cancel(); generation += 1; refreshing = false
         busy = true
@@ -72,9 +75,13 @@ final class WorkspaceModel: ObservableObject {
                         // Re-adding explicitly rebinds member paths that changed inode;
                         // refreshing a card never grants that trust silently.
                         snapshot.record.id = existing.id; snapshot.record.displayName = existing.displayName
-                        repositories[index] = snapshot.record; snapshots[existing.id] = snapshot; failures[existing.id] = nil
+                        let presentation = await Self.prepare(snapshot, reusing: presentations[existing.id])
+                        repositories[index] = snapshot.record; snapshots[existing.id] = snapshot
+                        presentations[existing.id] = presentation; failures[existing.id] = nil
                     } else {
+                        let presentation = await Self.prepare(snapshot, reusing: nil)
                         repositories.append(snapshot.record); snapshots[snapshot.record.id] = snapshot
+                        presentations[snapshot.record.id] = presentation
                     }
                 } catch { message = error.localizedDescription }
             }
@@ -83,7 +90,7 @@ final class WorkspaceModel: ObservableObject {
     }
     func forget(_ id: UUID) {
         guard !busy else { return }
-        repositories.removeAll { $0.id == id }; snapshots[id] = nil; failures[id] = nil
+        repositories.removeAll { $0.id == id }; snapshots[id] = nil; presentations[id] = nil; failures[id] = nil
         if !isDemo { save() }
     }
     func rename(_ id: UUID, name: String) {
@@ -93,10 +100,11 @@ final class WorkspaceModel: ObservableObject {
         if !isDemo { save() }
     }
     func refreshAll() {
-        guard !isDemo && !refreshing && !busy else { return }
+        guard !isDemo && !refreshing && !busy && !repositories.isEmpty else { return }
         let epoch = generation
         let records = repositories
         let scanner = self.scanner
+        let previousPresentations = presentations
         refreshing = true
         refreshTask = Task {
             defer { if epoch == generation { refreshing = false } }
@@ -105,7 +113,11 @@ final class WorkspaceModel: ObservableObject {
                 var iterator = records.makeIterator()
                 func add(_ record: RepositoryRecord) {
                     group.addTask {
-                        do { return .success(record, try await scanner.scanRegistered(record)) }
+                        do {
+                            let snapshot = try await scanner.scanRegistered(record)
+                            let presentation = await Self.prepare(snapshot, reusing: previousPresentations[record.id])
+                            return .success(record, snapshot, presentation)
+                        }
                         catch { return .failure(record.id, error.localizedDescription) }
                     }
                 }
@@ -113,10 +125,11 @@ final class WorkspaceModel: ObservableObject {
                 while let result = await group.next() {
                     if epoch != generation || Task.isCancelled { group.cancelAll(); return }
                     switch result {
-                    case .success(let previous, var snapshot):
+                    case .success(let previous, var snapshot, let presentation):
                         if let i = repositories.firstIndex(where: { $0.id == previous.id }) {
                             snapshot.record.displayName = repositories[i].displayName
                             repositories[i] = snapshot.record; snapshots[previous.id] = snapshot; failures[previous.id] = nil
+                            if presentations[previous.id] != presentation { presentations[previous.id] = presentation }
                         }
                     case .failure(let id, let error):
                         if repositories.contains(where: { $0.id == id }) { failures[id] = error }
@@ -149,8 +162,15 @@ final class WorkspaceModel: ObservableObject {
         guard persistenceAvailable && !isDemo else { return }
         do { try store.save(repositories) } catch { message = "保存失败：\(error.localizedDescription)" }
     }
+    nonisolated private static func prepare(_ snapshot: RepositorySnapshot,
+                                           reusing previous: RepositoryGraphPresentation?) async -> RepositoryGraphPresentation {
+        await Task.detached(priority: .userInitiated) {
+            if let previous, previous.matches(snapshot) { return previous }
+            return RepositoryGraphPresentation(snapshot: snapshot)
+        }.value
+    }
 }
 private enum ScanResult: Sendable {
-    case success(RepositoryRecord, RepositorySnapshot)
+    case success(RepositoryRecord, RepositorySnapshot, RepositoryGraphPresentation)
     case failure(UUID, String)
 }
